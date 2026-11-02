@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -23,8 +23,42 @@ import {
   Star,
   Download,
 } from "lucide-react";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const PassengerPage = () => {
+  const [originIATACode, setOriginIATACode] = useState("");
+  const [airportSuggestionsForOrigin, setAirportSuggestionsForOrigin] =
+    useState([]);
+  const [
+    airportSuggestionsForDestination,
+    setAirportSuggestionsForDestination,
+  ] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [originInput, setOriginInput] = useState("");
+  const [destination, setDestination] = useState("");
+  const [departureDate, setDepartureDate] = useState("");
+  const [adults, setAdults] = useState(1);
+
+  const searchAirports = async (data) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/flight/airports?query=${data}`,
+        {
+          withCredentials: true,
+        },
+      );
+      setAirportSuggestionsForOrigin(response.data.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Unable to fetch Airports");
+    }
+  };
+
+  useEffect(() => {
+    searchAirports();
+  }, []);
+
   return (
     <>
       <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -139,34 +173,78 @@ const PassengerPage = () => {
                 </div>
 
                 <div className="flex w-fit gap-1 rounded-full bg-slate-100 p-1">
-                  <span className="rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow">
+                  <span className="cursor-pointer rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow">
                     One Way
                   </span>
-                  <span className="rounded-full px-4 py-2 text-xs font-semibold text-slate-500">
+                  <span className="cursor-pointer rounded-full px-4 py-2 text-xs font-semibold text-slate-500">
                     Round Trip
                   </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
+                {/* FROM AIRPORT */}
+                <div className="relative z-30 rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
                     From
                   </label>
+
                   <div className="flex items-center gap-3">
                     <MapPin className="text-blue-600" size={21} />
                     <input
                       type="text"
                       placeholder="Departure city"
                       className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none placeholder:font-normal"
+                      value={originInput}
+                      onChange={(e) => {
+                        setOriginInput(e.target.value);
+                        searchAirports(e.target.value);
+                      }}
                     />
                   </div>
+
+                  {/* Origin Dropdown UI */}
+                  {airportSuggestionsForOrigin.length > 0 && (
+                    <div className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                      <p className="px-3 py-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                        Suggested Airports
+                      </p>
+
+                      {airportSuggestionsForOrigin.map((airport) => (
+                        <div
+                          key={airport.id}
+                          className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-3 transition hover:bg-blue-50"
+                        >
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                              <Plane size={17} />
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-bold text-slate-800">
+                                {airport.name}
+                              </p>
+                              <p className="truncate text-xs text-slate-500">
+                                {airport.city_name}
+                              </p>
+                            </div>
+                          </div>
+
+                          <span className="shrink-0 rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700">
+                            {airport.iata_code}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
+                {/* TO AIRPORT */}
+                <div className="relative z-20 rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
                     To
                   </label>
+
                   <div className="flex items-center gap-3">
                     <MapPin className="text-blue-600" size={21} />
                     <input
@@ -175,12 +253,49 @@ const PassengerPage = () => {
                       className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none placeholder:font-normal"
                     />
                   </div>
+
+                  {/* Destination Dropdown UI */}
+                  {airportSuggestionsForDestination.length > 0 && (
+                    <div className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                      <p className="px-3 py-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                        Suggested Airports
+                      </p>
+
+                      {airportSuggestionsForDestination.map((airport) => (
+                        <div
+                          key={airport.id}
+                          className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-3 transition hover:bg-blue-50"
+                        >
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                              <Plane size={17} />
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-bold text-slate-800">
+                                {airport.name}
+                              </p>
+                              <p className="truncate text-xs text-slate-500">
+                                {airport.city_name}
+                              </p>
+                            </div>
+                          </div>
+
+                          <span className="shrink-0 rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700">
+                            {airport.iata_code}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
+                {/* DEPARTURE */}
                 <div className="rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
                     Departure
                   </label>
+
                   <div className="flex items-center gap-3">
                     <CalendarDays className="text-blue-600" size={21} />
                     <input
@@ -190,10 +305,12 @@ const PassengerPage = () => {
                   </div>
                 </div>
 
+                {/* PASSENGERS */}
                 <div className="rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
                     Passengers
                   </label>
+
                   <div className="flex items-center gap-3">
                     <Users className="text-blue-600" size={21} />
                     <select className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none">
