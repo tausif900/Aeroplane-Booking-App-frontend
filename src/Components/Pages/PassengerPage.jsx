@@ -36,11 +36,12 @@ const PassengerPage = () => {
   ] = useState([]);
   const [loading, setLoading] = useState(false);
   const [originInput, setOriginInput] = useState("");
+  const [destinationInput, setDestinationInput] = useState("");
   const [destination, setDestination] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [adults, setAdults] = useState(1);
 
-  const searchAirports = async (data) => {
+  const airportsOfOrigin = async (data) => {
     try {
       const response = await axios.get(
         `http://localhost:8080/flight/airports?query=${data}`,
@@ -51,12 +52,28 @@ const PassengerPage = () => {
       setAirportSuggestionsForOrigin(response.data.data);
     } catch (error) {
       console.log(error);
-      toast.error("Unable to fetch Airports");
+      toast.error("Unable to fetch Airports For Origin");
+    }
+  };
+
+  const airportsOfDestination = async (data) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/flight/airports?query=${data}`,
+        {
+          withCredentials: true,
+        },
+      );
+      setAirportSuggestionsForDestination(response.data.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Unable to fetch Airports For Destination");
     }
   };
 
   useEffect(() => {
-    searchAirports();
+    airportsOfOrigin();
+    airportsOfDestination();
   }, []);
 
   return (
@@ -198,7 +215,7 @@ const PassengerPage = () => {
                       value={originInput}
                       onChange={(e) => {
                         setOriginInput(e.target.value);
-                        searchAirports(e.target.value);
+                        airportsOfOrigin(e.target.value);
                       }}
                     />
                   </div>
@@ -251,6 +268,11 @@ const PassengerPage = () => {
                       type="text"
                       placeholder="Destination city"
                       className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none placeholder:font-normal"
+                      value={destinationInput}
+                      onChange={(e) => {
+                        setDestinationInput(e.target.value);
+                        airportsOfDestination(e.target.value);
+                      }}
                     />
                   </div>
 
