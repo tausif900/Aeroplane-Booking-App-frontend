@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-
-import { Link } from "react-router-dom";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import { data, Link } from "react-router-dom";
 
 import {
   Plane,
@@ -28,6 +29,7 @@ import axios from "axios";
 
 const PassengerPage = () => {
   const [originIATACode, setOriginIATACode] = useState("");
+  const [destinationIATACode, setDestinationIATACode] = useState("");
   const [airportSuggestionsForOrigin, setAirportSuggestionsForOrigin] =
     useState([]);
   const [
@@ -38,8 +40,10 @@ const PassengerPage = () => {
   const [originInput, setOriginInput] = useState("");
   const [destinationInput, setDestinationInput] = useState("");
   const [destination, setDestination] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [departureDate, setDepartureDate] = useState("");
   const [adults, setAdults] = useState(1);
+  const [cabinClass, setCabinClass] = useState("economy");
 
   const airportsOfOrigin = async (data) => {
     try {
@@ -71,10 +75,62 @@ const PassengerPage = () => {
     }
   };
 
+  const searchFlights = async ({
+    origin,
+    destination,
+    departureDate,
+    adults,
+    cabinClass,
+  }) => {
+    try {
+      const data = {
+        origin,
+        destination,
+        departureDate,
+        adults,
+        cabinClass,
+      };
+      const response = await axios.post(
+        "http://localhost:8080/flight/search",
+        data,
+        { withCredentials: true },
+      );
+      console.log(response.data.data.offers[0]);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
+
   useEffect(() => {
-    airportsOfOrigin();
-    airportsOfDestination();
-  }, []);
+    // Delay for Origin Airportsuggesstions
+    let timer;
+    if (originInput.length >= 2) {
+      timer = setTimeout(() => {
+        airportsOfOrigin(originInput);
+      }, 500);
+    } else {
+      setAirportSuggestionsForOrigin([]);
+    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [originInput]);
+
+  useEffect(() => {
+    // Delay for Destination Airportsuggesstions
+    let timer;
+    if (destinationInput.length >= 2) {
+      timer = setTimeout(() => {
+        airportsOfDestination(destinationInput);
+      }, 500);
+    } else {
+      setAirportSuggestionsForDestination([]);
+    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [destinationInput]);
 
   return (
     <>
@@ -199,7 +255,7 @@ const PassengerPage = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
                 {/* FROM AIRPORT */}
                 <div className="relative z-30 rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -215,7 +271,6 @@ const PassengerPage = () => {
                       value={originInput}
                       onChange={(e) => {
                         setOriginInput(e.target.value);
-                        airportsOfOrigin(e.target.value);
                       }}
                     />
                   </div>
@@ -231,6 +286,13 @@ const PassengerPage = () => {
                         <div
                           key={airport.id}
                           className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-3 transition hover:bg-blue-50"
+                          onClick={() => {
+                            console.log(airport.name);
+                            setOriginInput(airport.name);
+                            console.log(airport.iata_code);
+                            setOriginIATACode(airport.iata_code);
+                            setAirportSuggestionsForOrigin([]);
+                          }}
                         >
                           <div className="flex min-w-0 items-center gap-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
@@ -271,7 +333,6 @@ const PassengerPage = () => {
                       value={destinationInput}
                       onChange={(e) => {
                         setDestinationInput(e.target.value);
-                        airportsOfDestination(e.target.value);
                       }}
                     />
                   </div>
@@ -287,6 +348,13 @@ const PassengerPage = () => {
                         <div
                           key={airport.id}
                           className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-3 transition hover:bg-blue-50"
+                          onClick={() => {
+                            console.log(airport.name);
+                            setDestinationInput(airport.name);
+                            console.log(airport.iata_code);
+                            setDestinationIATACode(airport.iata_code);
+                            setAirportSuggestionsForDestination([]);
+                          }}
                         >
                           <div className="flex min-w-0 items-center gap-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
@@ -320,9 +388,17 @@ const PassengerPage = () => {
 
                   <div className="flex items-center gap-3">
                     <CalendarDays className="text-blue-600" size={21} />
-                    <input
-                      type="date"
-                      className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none"
+                    <DatePicker
+                      selected={selectedDate}
+                      onChange={(date) => {
+                        setSelectedDate(date);
+                        setDepartureDate(
+                          date ? date.toISOString().split("T")[0] : "",
+                        );
+                      }}
+                      placeholderText="Select departure date"
+                      dateFormat="dd MMM yyyy"
+                      minDate={new Date()}
                     />
                   </div>
                 </div>
@@ -335,11 +411,38 @@ const PassengerPage = () => {
 
                   <div className="flex items-center gap-3">
                     <Users className="text-blue-600" size={21} />
-                    <select className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none">
-                      <option>1 Passenger</option>
-                      <option>2 Passengers</option>
-                      <option>3 Passengers</option>
-                      <option>4 Passengers</option>
+                    <select
+                      className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none"
+                      onChange={(e) => {
+                        setAdults(Number(e.target.value));
+                      }}
+                    >
+                      <option value={1}>1 Passenger</option>
+                      <option value={2}>2 Passengers</option>
+                      <option value={3}>3 Passengers</option>
+                      <option value={4}>4 Passengers</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Cabin Class
+                  </label>
+
+                  <div className="flex items-center gap-3">
+                    <Plane className="text-blue-600" size={21} />
+
+                    <select
+                      className="w-full min-w-0 bg-transparent text-sm font-semibold outline-none"
+                      onChange={(e) => {
+                        setCabinClass(e.target.value);
+                      }}
+                    >
+                      <option value="economy">Economy</option>
+                      <option value="premium_economy">Premium Economy</option>
+                      <option value="business">Business</option>
+                      <option value="first">First Class</option>
                     </select>
                   </div>
                 </div>
@@ -354,6 +457,15 @@ const PassengerPage = () => {
                 <button
                   type="button"
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 sm:w-auto"
+                  onClick={() => {
+                    searchFlights({
+                      origin: originIATACode,
+                      destination: destinationIATACode,
+                      departureDate: departureDate,
+                      adults: adults,
+                      cabinClass: cabinClass,
+                    });
+                  }}
                 >
                   <Search size={18} />
                   Search Flights
