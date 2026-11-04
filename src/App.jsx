@@ -6,12 +6,14 @@ import Home from "./Components/General/Home";
 import Login from "./Components/Authentication/Login";
 import Registration from "./Components/Authentication/Registration";
 import PassengerPage from "./Components/Pages/PassengerPage";
+import FlightsPage from "./Components/Pages/FlightsPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/registration", element: <Registration /> },
   { path: "/user-dashboard", element: <PassengerPage /> },
+  { path: "/searched-flights", element: <FlightsPage /> },
 ]);
 const App = () => {
   return (

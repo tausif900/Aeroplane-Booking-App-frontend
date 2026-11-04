@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { data, Link } from "react-router-dom";
+import { data, Link, useNavigate } from "react-router-dom";
 
 import {
   Plane,
@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const PassengerPage = () => {
+  const navigate = useNavigate();
   const [originIATACode, setOriginIATACode] = useState("");
   const [destinationIATACode, setDestinationIATACode] = useState("");
   const [airportSuggestionsForOrigin, setAirportSuggestionsForOrigin] =
@@ -96,6 +97,9 @@ const PassengerPage = () => {
         { withCredentials: true },
       );
       console.log(response.data.data.offers[0]);
+      navigate("/searched-flights", {
+        state: { flightData: response.data.data },
+      });
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
