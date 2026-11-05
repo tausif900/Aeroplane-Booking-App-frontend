@@ -21,10 +21,34 @@ import {
 
 const FlightsPage = () => {
   const [rate, setRate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [flightsPerPage] = useState(5);
   const location = useLocation();
   const flightData = location.state?.flightData;
-  const offers = flightData?.offers;
+  const offers = flightData?.offers || [];
   console.log(offers);
+
+  const origin = offers[0].slices[0]?.segments[0]?.origin.city_name;
+  const originIATACode = offers[0].slices[0]?.segments[0]?.origin.iata_code;
+
+  const destination = offers[0].slices[0]?.segments[0]?.destination.city_name;
+  const destinationIATACode =
+    offers[0].slices[0]?.segments[0]?.destination.iata_code;
+
+  const departureDate =
+    offers[0].slices[0]?.segments[0]?.departing_at.split("T")[0];
+
+  const totalPassengers = offers[0].passengers?.length;
+
+  const cabinClass =
+    offers[0].slices[0]?.segments[0]?.passengers[0]?.cabin.cabin_class;
+
+  let startIndex = (currentPage - 1) * flightsPerPage;
+  let endIndex = startIndex + flightsPerPage;
+
+  const currentFlights = offers?.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(offers.length / flightsPerPage);
 
   useEffect(() => {
     const getRate = async () => {
@@ -96,7 +120,9 @@ const FlightsPage = () => {
               <MapPin className="shrink-0 text-blue-600" size={21} />
               <div>
                 <p className="text-xs text-slate-400">From</p>
-                <p className="font-bold text-slate-800">Mumbai (BOM)</p>
+                <p className="font-bold text-slate-800">
+                  {origin} ({originIATACode})
+                </p>
               </div>
             </div>
 
@@ -104,7 +130,9 @@ const FlightsPage = () => {
               <MapPin className="shrink-0 text-blue-600" size={21} />
               <div>
                 <p className="text-xs text-slate-400">To</p>
-                <p className="font-bold text-slate-800">Delhi (DEL)</p>
+                <p className="font-bold text-slate-800">
+                  {destination} ({destinationIATACode})
+                </p>
               </div>
             </div>
 
@@ -112,7 +140,9 @@ const FlightsPage = () => {
               <CalendarDays className="shrink-0 text-blue-600" size={21} />
               <div>
                 <p className="text-xs text-slate-400">Departure</p>
-                <p className="text-sm font-bold text-slate-800">15 Nov 2026</p>
+                <p className="text-sm font-bold text-slate-800">
+                  {departureDate}
+                </p>
               </div>
             </div>
 
@@ -120,7 +150,9 @@ const FlightsPage = () => {
               <Users className="shrink-0 text-blue-600" size={21} />
               <div>
                 <p className="text-xs text-slate-400">Passengers</p>
-                <p className="text-sm font-bold text-slate-800">1 Passenger</p>
+                <p className="text-sm font-bold text-slate-800">
+                  {totalPassengers} Passenger
+                </p>
               </div>
             </div>
 
@@ -128,7 +160,7 @@ const FlightsPage = () => {
               <Armchair className="shrink-0 text-blue-600" size={21} />
               <div>
                 <p className="text-xs text-slate-400">Cabin Class</p>
-                <p className="font-bold text-slate-800">Economy</p>
+                <p className="font-bold text-slate-800">{cabinClass}</p>
               </div>
             </div>
           </div>
@@ -234,99 +266,108 @@ const FlightsPage = () => {
 
               <div className="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700">
                 <Search size={15} className="mr-2 inline" />
-                61 Offers Found
+                {offers.length} Offers Found
               </div>
             </div>
 
             {/* Flight Card 1 */}
-            {offers.length > 0 ? (
-              offers.map((offer) => {
+            {currentFlights.length > 0 ? (
+              currentFlights.map((offer) => {
                 return (
-                  <div
-                    className="group mb-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-900/[0.03] transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/[0.06] sm:p-6"
-                    key={offer.id}
-                  >
-                    <div className="flex flex-col gap-5 xl:flex-row xl:items-center">
-                      {/* Airline */}
-                      <div className="flex items-center gap-3 xl:w-40 xl:flex-col xl:items-start">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50">
-                          <Plane className="text-red-600" size={26} />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-slate-900">
-                            {offer.owner?.name}
-                          </h3>
-                          <p className="text-xs text-slate-500">
-                            {offer.owner?.iata_code}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Journey */}
-                      <div className="flex flex-1 items-center justify-between gap-2">
-                        <div>
-                          <h3 className="text-xl font-extrabold text-slate-900">
-                            {
-                              offer.slices[0]?.segments[0]?.departing_at.split(
-                                "T",
-                              )[1]
-                            }
-                          </h3>
-                          <p className="text-sm font-semibold text-slate-500">
-                            {
-                              offer.slices[0]?.segments[0]?.origin
-                                .iata_city_code
-                            }
-                          </p>
-                        </div>
-
-                        <div className="flex flex-1 flex-col items-center px-2">
-                          <span className="text-xs text-slate-400">2h 10m</span>
-                          <div className="my-2 flex w-full items-center">
-                            <div className="h-px flex-1 border-t border-dashed border-slate-300" />
-                            <Plane
-                              className="mx-2 shrink-0 text-blue-600"
-                              size={18}
-                            />
-                            <div className="h-px flex-1 border-t border-dashed border-slate-300" />
+                  <div>
+                    {" "}
+                    <div
+                      className="group mb-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-900/[0.03] transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/[0.06] sm:p-6"
+                      key={offer.id}
+                    >
+                      <div className="flex flex-col gap-5 xl:flex-row xl:items-center">
+                        {/* Airline */}
+                        <div className="flex items-center gap-3 xl:w-40 xl:flex-col xl:items-start">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50">
+                            <Plane className="text-red-600" size={26} />
                           </div>
-                          <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                            Non Stop
-                          </span>
+                          <div>
+                            <h3 className="font-bold text-slate-900">
+                              {offer.owner?.name}
+                            </h3>
+                            <p className="text-xs text-slate-500">
+                              {offer.owner?.iata_code}
+                            </p>
+                          </div>
                         </div>
 
-                        <div className="text-right">
-                          <h3 className="text-xl font-extrabold text-slate-900">
-                            {
-                              offer.slices[0]?.segments[0]?.arriving_at.split(
-                                "T",
-                              )[1]
-                            }
-                          </h3>
-                          <p className="text-sm font-semibold text-slate-500">
-                            {
-                              offer.slices[0]?.segments[0]?.destination
-                                .iata_city_code
-                            }
-                          </p>
-                        </div>
-                      </div>
+                        {/* Journey */}
+                        <div className="flex flex-1 items-center justify-between gap-2">
+                          <div>
+                            <h3 className="text-xl font-extrabold text-slate-900">
+                              {
+                                offer.slices[0]?.segments[0]?.departing_at.split(
+                                  "T",
+                                )[1]
+                              }
+                            </h3>
+                            <p className="text-sm font-semibold text-slate-500">
+                              {
+                                offer.slices[0]?.segments[0]?.origin
+                                  .iata_city_code
+                              }
+                            </p>
+                          </div>
 
-                      {/* Price */}
-                      <div className="flex items-center justify-between border-t border-slate-100 pt-4 xl:w-44 xl:flex-col xl:items-end xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
-                        <div>
-                          <h3 className="text-2xl font-extrabold text-slate-900">
-                            ₹{currencyToINR(offer.intended_total_amount, rate)}
-                          </h3>
-                          <p className="text-xs text-slate-500">
-                            Per passenger
-                          </p>
+                          <div className="flex flex-1 flex-col items-center px-2">
+                            <span className="text-xs text-slate-400">
+                              2h 10m
+                            </span>
+                            <div className="my-2 flex w-full items-center">
+                              <div className="h-px flex-1 border-t border-dashed border-slate-300" />
+                              <Plane
+                                className="mx-2 shrink-0 text-blue-600"
+                                size={18}
+                              />
+                              <div className="h-px flex-1 border-t border-dashed border-slate-300" />
+                            </div>
+                            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                              Non Stop
+                            </span>
+                          </div>
+
+                          <div className="text-right">
+                            <h3 className="text-xl font-extrabold text-slate-900">
+                              {
+                                offer.slices[0]?.segments[0]?.arriving_at.split(
+                                  "T",
+                                )[1]
+                              }
+                            </h3>
+                            <p className="text-sm font-semibold text-slate-500">
+                              {
+                                offer.slices[0]?.segments[0]?.destination
+                                  .iata_city_code
+                              }
+                            </p>
+                          </div>
                         </div>
+
+                        {/* Price */}
+                        <div className="flex items-center justify-between border-t border-slate-100 pt-4 xl:w-44 xl:flex-col xl:items-end xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
+                          <div>
+                            <h3 className="text-2xl font-extrabold text-slate-900">
+                              ₹
+                              {currencyToINR(
+                                offer.intended_total_amount,
+                                rate,
+                              ).toFixed(2)}
+                            </h3>
+                            <p className="text-xs text-slate-500">
+                              Per passenger
+                            </p>
+                          </div>
+                        </div>
+                        <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                          View Details{" "}
+                          <ChevronDown className="ml-1 inline" size={16} />
+                        </button>
                       </div>
-                      <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100">
-                        View Details{" "}
-                        <ChevronDown className="ml-1 inline" size={16} />
-                      </button>
                     </div>
                   </div>
                 );
@@ -336,6 +377,29 @@ const FlightsPage = () => {
                 <h1>No Flights Found</h1>
               </div>
             )}
+
+            <div className="flex items-center justify-center gap-4 mt-8 mb-6">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                ← Previous
+              </button>
+
+              <span className="text-sm font-semibold text-gray-700">
+                Page <span className="text-blue-600">{currentPage}</span> of{" "}
+                {totalPages}
+              </span>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                Next →
+              </button>
+            </div>
 
             {/* Bottom Note */}
             <div className="mt-8 rounded-2xl border border-blue-100 bg-blue-50 p-4">

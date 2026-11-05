@@ -91,6 +91,7 @@ const PassengerPage = () => {
         adults,
         cabinClass,
       };
+      console.log(data.departureDate);
       const response = await axios.post(
         "http://localhost:8080/flight/search",
         data,
@@ -396,9 +397,14 @@ const PassengerPage = () => {
                       selected={selectedDate}
                       onChange={(date) => {
                         setSelectedDate(date);
-                        setDepartureDate(
-                          date ? date.toISOString().split("T")[0] : "",
-                        );
+                        const formattedDate = `${date.getFullYear()}-${String(
+                          date.getMonth() + 1,
+                        ).padStart(
+                          2,
+                          "0",
+                        )}-${String(date.getDate()).padStart(2, "0")}`;
+
+                        setDepartureDate(formattedDate);
                       }}
                       placeholderText="Select departure date"
                       dateFormat="dd MMM yyyy"
