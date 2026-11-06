@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Plane,
   MapPin,
@@ -20,6 +20,7 @@ import {
 } from "../../Utils/currencyExchangeUtils";
 
 const FlightsPage = () => {
+  const navigate = useNavigate();
   const [rate, setRate] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [flightsPerPage] = useState(5);
@@ -363,7 +364,14 @@ const FlightsPage = () => {
                             </p>
                           </div>
                         </div>
-                        <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                        <button
+                          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
+                          onClick={() => {
+                            navigate(`/flight/${offer.id}`, {
+                              state: { offer },
+                            });
+                          }}
+                        >
                           View Details{" "}
                           <ChevronDown className="ml-1 inline" size={16} />
                         </button>
