@@ -110,7 +110,6 @@ const FlightById = () => {
                   {flight?.slices?.[0]?.segments?.[0]?.stops?.length === 0
                     ? "Direct Flight"
                     : "Via"}
-                  
                 </span>
               </div>
 
