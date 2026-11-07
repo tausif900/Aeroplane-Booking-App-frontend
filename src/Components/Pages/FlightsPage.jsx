@@ -328,7 +328,9 @@ const FlightsPage = () => {
                               <div className="h-px flex-1 border-t border-dashed border-slate-300" />
                             </div>
                             <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                              Non Stop
+                              {offer.slices[0]?.segments[0]?.stops?.length === 0
+                                ? "Non-Stop"
+                                : "Via"}
                             </span>
                           </div>
 

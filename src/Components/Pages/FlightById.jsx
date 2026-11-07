@@ -15,7 +15,6 @@ const FlightById = () => {
         `http://localhost:8080/flight/${flightId}`,
         { withCredentials: true },
       );
-      console.log(response.data.data);
       setFlight(response.data.data);
     } catch (error) {
       console.log(error);
@@ -23,9 +22,18 @@ const FlightById = () => {
     }
   }
 
+  const formattedDate = (d) => {
+    const date = new Date(d);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(date);
+  };
+
   useEffect(() => {
     getFlightById();
-  }, []);
+  }, [flightId]);
 
   return (
     <>
@@ -91,8 +99,19 @@ const FlightById = () => {
                   {" "}
                   {flight?.slices?.[0]?.segments?.[0]?.origin?.name}{" "}
                 </p>
-                <p className="text-lg font-semibold mt-3">10:50 AM</p>
-                <p className="text-xs text-slate-400">15 Nov 2026</p>
+                <p className="text-lg font-semibold mt-3">
+                  {
+                    flight?.slices?.[0]?.segments?.[0]?.departing_at.split(
+                      "T",
+                    )[1]
+                  }
+                </p>
+                <p className="text-xs text-slate-400">
+                  {flight?.slices?.[0]?.segments?.[0]?.departing_at &&
+                    formattedDate(
+                      flight.slices[0].segments[0].departing_at.split("T")[0],
+                    )}
+                </p>
               </div>
 
               <div className="flex flex-col items-center">
@@ -135,8 +154,20 @@ const FlightById = () => {
                   {" "}
                   {flight?.slices?.[0]?.segments?.[0]?.destination?.name}{" "}
                 </p>
-                <p className="text-lg font-semibold mt-3">12:29 PM</p>
-                <p className="text-xs text-slate-400">15 Nov 2026</p>
+                <p className="text-lg font-semibold mt-3">
+                  {" "}
+                  {
+                    flight?.slices?.[0]?.segments?.[0]?.arriving_at.split(
+                      "T",
+                    )[1]
+                  }
+                </p>
+                <p className="text-xs text-slate-400">
+                  {flight?.slices?.[0]?.segments?.[0]?.arriving_at &&
+                    formattedDate(
+                      flight.slices[0].segments[0].arriving_at.split("T")[0],
+                    )}
+                </p>
               </div>
             </div>
           </div>
