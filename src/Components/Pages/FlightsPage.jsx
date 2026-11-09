@@ -42,8 +42,8 @@ const FlightsPage = () => {
   const totalPassengers = offers[0].passengers?.length;
 
   const cabinClass =
-    offers[0].slices[0]?.segments[0]?.passengers[0]?.cabin.cabin_class;
-
+    offers[0].slices[0]?.segments[0]?.passengers[0]?.cabin_class_marketing_name;
+  
   let startIndex = (currentPage - 1) * flightsPerPage;
   let endIndex = startIndex + flightsPerPage;
 
@@ -369,9 +369,7 @@ const FlightsPage = () => {
                         <button
                           className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
                           onClick={() => {
-                            navigate(`/flight/${offer.id}`, {
-                              state: { offer },
-                            });
+                            navigate(`/flight/${offer.id}`);
                           }}
                         >
                           View Details{" "}

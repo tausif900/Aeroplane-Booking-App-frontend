@@ -8,6 +8,7 @@ import Registration from "./Components/Authentication/Registration";
 import PassengerPage from "./Components/Pages/PassengerPage";
 import FlightsPage from "./Components/Pages/FlightsPage";
 import FlightById from "./Components/Pages/FlightById";
+import PassengerDetails from "./Components/Pages/PassengerDetails";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
   { path: "/user-dashboard", element: <PassengerPage /> },
   { path: "/searched-flights", element: <FlightsPage /> },
   { path: "/flight/:flightId", element: <FlightById /> },
+  { path: "/passenger-details", element: <PassengerDetails /> },
 ]);
 const App = () => {
   return (

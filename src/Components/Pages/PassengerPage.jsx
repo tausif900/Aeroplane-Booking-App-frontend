@@ -91,7 +91,6 @@ const PassengerPage = () => {
         adults,
         cabinClass,
       };
-      console.log(data.departureDate);
       const response = await axios.post(
         "http://localhost:8080/flight/search",
         data,
