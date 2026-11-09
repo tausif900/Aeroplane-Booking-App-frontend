@@ -2,12 +2,17 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Await, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  currencyToINR,
+  fetchExchangeRate,
+} from "../../Utils/currencyExchangeUtils";
 
 const FlightById = () => {
   const { flightId } = useParams();
   console.log(flightId);
 
   const [flight, setFlight] = useState({});
+  const [rate, setRate] = useState(null);
 
   async function getFlightById() {
     try {
@@ -15,6 +20,7 @@ const FlightById = () => {
         `http://localhost:8080/flight/${flightId}`,
         { withCredentials: true },
       );
+      console.log(response.data.data);
       setFlight(response.data.data);
     } catch (error) {
       console.log(error);
@@ -34,6 +40,14 @@ const FlightById = () => {
   useEffect(() => {
     getFlightById();
   }, [flightId]);
+
+  useEffect(() => {
+    const getRate = async () => {
+      const exchangeRate = await fetchExchangeRate();
+      setRate(exchangeRate);
+    };
+    getRate();
+  }, []);
 
   return (
     <>
@@ -184,21 +198,42 @@ const FlightById = () => {
                   ✈️
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-800">Duffel Airways</h3>
-                  <p className="text-sm text-slate-500">Flight No. 8675</p>
+                  <h3 className="font-bold text-slate-800">
+                    {flight?.owner?.name}
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Flight No.{" "}
+                    {
+                      flight?.slices?.[0]?.segments?.[0]
+                        ?.marketing_carrier_flight_number
+                    }
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6 mt-6">
                 <div>
                   <p className="text-xs text-slate-500">Departure</p>
-                  <h3 className="font-bold text-slate-900 mt-1">BOM</h3>
-                  <p className="text-sm text-slate-500">Terminal 2</p>
+                  <h3 className="font-bold text-slate-900 mt-1">
+                    {flight?.slices?.[0]?.segments?.[0]?.origin?.iata_city_code}
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Terminal{" "}
+                    {flight?.slices?.[0]?.segments?.[0]?.origin_terminal}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500">Arrival</p>
-                  <h3 className="font-bold text-slate-900 mt-1">DXB</h3>
-                  <p className="text-sm text-slate-500">Terminal 1</p>
+                  <h3 className="font-bold text-slate-900 mt-1">
+                    {
+                      flight?.slices?.[0]?.segments?.[0]?.destination
+                        ?.iata_city_code
+                    }
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Terminal{" "}
+                    {flight?.slices?.[0]?.segments?.[0]?.destination_terminal}
+                  </p>
                 </div>
               </div>
             </div>
@@ -214,19 +249,37 @@ const FlightById = () => {
               <div className="bg-slate-50 rounded-xl p-5">
                 <span className="text-2xl">🧳</span>
                 <p className="text-sm text-slate-500 mt-3">Checked Baggage</p>
-                <h3 className="text-lg font-bold text-slate-900">1 Bag</h3>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {
+                    flight?.slices?.[0]?.segments?.[0]?.passengers?.[0]
+                      ?.baggages?.[0]?.quantity
+                  }{" "}
+                  Bag
+                </h3>
               </div>
 
               <div className="bg-slate-50 rounded-xl p-5">
                 <span className="text-2xl">🎒</span>
                 <p className="text-sm text-slate-500 mt-3">Cabin Baggage</p>
-                <h3 className="text-lg font-bold text-slate-900">1 Bag</h3>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {" "}
+                  {
+                    flight?.slices?.[0]?.segments?.[0]?.passengers?.[0]
+                      ?.baggages?.[0]?.quantity
+                  }{" "}
+                  Bag
+                </h3>
               </div>
 
               <div className="bg-slate-50 rounded-xl p-5">
                 <span className="text-2xl">💺</span>
                 <p className="text-sm text-slate-500 mt-3">Cabin Class</p>
-                <h3 className="text-lg font-bold text-slate-900">Business</h3>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {
+                    flight?.slices?.[0]?.segments?.[0]?.passengers?.[0]
+                      ?.cabin_class_marketing_name
+                  }
+                </h3>
               </div>
             </div>
           </div>
@@ -239,19 +292,31 @@ const FlightById = () => {
 
             <div className="flex justify-between mb-3 text-sm">
               <span className="text-slate-500">Base Fare</span>
-              <span className="font-semibold">$1,263.66</span>
+
+              {rate !== null && flight?.base_amount && (
+                <span className="font-semibold">
+                  ₹ {currencyToINR(flight.base_amount, rate).toFixed(2)}
+                </span>
+              )}
             </div>
 
             <div className="flex justify-between mb-5 text-sm">
               <span className="text-slate-500">Taxes & Charges</span>
-              <span className="font-semibold">$227.46</span>
+              {rate !== null && flight?.tax_amount && (
+                <span className="font-semibold">
+                  ₹ {currencyToINR(flight.tax_amount, rate).toFixed(2)}
+                </span>
+              )}
             </div>
 
             <div className="border-t pt-5 flex justify-between items-center">
               <span className="font-bold text-slate-900">Total Amount</span>
-              <span className="text-2xl font-bold text-blue-600">
-                $1,491.12
-              </span>
+
+              {rate !== null && flight?.total_amount && (
+                <span className="text-2xl font-bold text-blue-600">
+                  ₹ {currencyToINR(flight.total_amount, rate).toFixed(2)}
+                </span>
+              )}
             </div>
           </div>
         </div>
