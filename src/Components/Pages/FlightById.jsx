@@ -323,7 +323,10 @@ const FlightById = () => {
               className="w-1/4 rounded-xl bg-blue-600 px-6 py-3 mx-100 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]"
               onClick={() =>
                 navigate("/passenger-details", {
-                  state: { adults: flight.passengers.length },
+                  state: {
+                    adults: flight.passengers.length,
+                    flightData: flight,
+                  },
                 })
               }
             >

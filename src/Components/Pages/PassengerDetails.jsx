@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import {
+  currencyToINR,
+  fetchExchangeRate,
+} from "../../Utils/currencyExchangeUtils";
 
 const PassengerDetails = () => {
   const location = useLocation();
   const adults = location.state?.adults || 1;
   console.log(adults);
+  const flightData = location.state?.flightData;
+  console.log(flightData);
+
   const [passengerDetails, setPassengerDetails] = useState(
     Array.from({ length: adults }, () => ({
       firstName: "",
@@ -12,11 +19,33 @@ const PassengerDetails = () => {
       dateOfBirth: "",
       gender: "",
       passportNumber: "",
-      passportExpiry: "",
+      passportExpiryDate: "",
       nationality: "",
     })),
   );
-  console.log(passengerDetails);
+
+  const [contactDetails, setContactDetails] = useState({
+    email: "",
+    phoneNumber: "",
+  });
+
+  const [rate, setRate] = useState(null);
+
+  const handlePassengerDetails = (data) => {
+    console.log(data);
+  };
+
+  const handleContactDetails = (data) => {
+    console.log(data);
+  };
+
+  useEffect(() => {
+    const getRate = async () => {
+      const exchangeRate = await fetchExchangeRate();
+      setRate(exchangeRate);
+    };
+    getRate();
+  }, []);
 
   return (
     <>
@@ -67,6 +96,15 @@ const PassengerDetails = () => {
                         </label>
                         <input
                           type="text"
+                          value={p.firstName}
+                          onChange={(e) => {
+                            const updatedPassengers = [...passengerDetails];
+                            updatedPassengers[idx] = {
+                              ...updatedPassengers[idx],
+                              firstName: e.target.value,
+                            };
+                            setPassengerDetails(updatedPassengers);
+                          }}
                           placeholder="Enter first name"
                           name="firstName"
                           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
@@ -80,6 +118,15 @@ const PassengerDetails = () => {
                         <input
                           type="text"
                           name="lastName"
+                          value={p.lastName}
+                          onChange={(e) => {
+                            const updatedPassengers = [...passengerDetails];
+                            updatedPassengers[idx] = {
+                              ...updatedPassengers[idx],
+                              lastName: e.target.value,
+                            };
+                            setPassengerDetails(updatedPassengers);
+                          }}
                           placeholder="Enter last name"
                           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
@@ -92,6 +139,15 @@ const PassengerDetails = () => {
                         <input
                           type="date"
                           name="dateOfBirth"
+                          value={p.dateOfBirth}
+                          onChange={(e) => {
+                            const updatedPassengers = [...passengerDetails];
+                            updatedPassengers[idx] = {
+                              ...updatedPassengers[idx],
+                              dateOfBirth: e.target.value,
+                            };
+                            setPassengerDetails(updatedPassengers);
+                          }}
                           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
                       </div>
@@ -100,7 +156,18 @@ const PassengerDetails = () => {
                         <label className="mb-2 block text-sm font-medium text-slate-700">
                           Gender
                         </label>
-                        <select className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        <select
+                          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          value={p.gender}
+                          onChange={(e) => {
+                            const updatedPassengers = [...passengerDetails];
+                            updatedPassengers[idx] = {
+                              ...updatedPassengers[idx],
+                              gender: e.target.value,
+                            };
+                            setPassengerDetails(updatedPassengers);
+                          }}
+                        >
                           <option value="">Select Gender</option>
                           <option value="male">Male</option>
                           <option value="female">Female</option>
@@ -123,6 +190,15 @@ const PassengerDetails = () => {
                           <input
                             type="text"
                             name="passportNumber"
+                            value={p.passportNumber}
+                            onChange={(e) => {
+                              const updatedPassengers = [...passengerDetails];
+                              updatedPassengers[idx] = {
+                                ...updatedPassengers[idx],
+                                passportNumber: e.target.value,
+                              };
+                              setPassengerDetails(updatedPassengers);
+                            }}
                             placeholder="Enter passport number"
                             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           />
@@ -135,6 +211,15 @@ const PassengerDetails = () => {
                           <input
                             type="date"
                             name="passportExpiryDate"
+                            value={p.passportExpiryDate}
+                            onChange={(e) => {
+                              const updatedPassengers = [...passengerDetails];
+                              updatedPassengers[idx] = {
+                                ...updatedPassengers[idx],
+                                passportExpiryDate: e.target.value,
+                              };
+                              setPassengerDetails(updatedPassengers);
+                            }}
                             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           />
                         </div>
@@ -146,6 +231,15 @@ const PassengerDetails = () => {
                           <input
                             type="text"
                             name="nationality"
+                            value={p.nationality}
+                            onChange={(e) => {
+                              const updatedPassengers = [...passengerDetails];
+                              updatedPassengers[idx] = {
+                                ...updatedPassengers[idx],
+                                nationality: e.target.value,
+                              };
+                              setPassengerDetails(updatedPassengers);
+                            }}
                             placeholder="Enter nationality"
                             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           />
@@ -170,7 +264,7 @@ const PassengerDetails = () => {
                         dateOfBirth: "",
                         gender: "",
                         passportNumber: "",
-                        passportExpiry: "",
+                        passportExpiryDate: "",
                         nationality: "",
                       },
                     ]);
@@ -193,7 +287,7 @@ const PassengerDetails = () => {
                         dateOfBirth: "",
                         gender: "",
                         passportNumber: "",
-                        passportExpiry: "",
+                        passportExpiryDate: "",
                         nationality: "",
                       },
                     ]);
@@ -222,6 +316,13 @@ const PassengerDetails = () => {
                     <input
                       type="email"
                       name="email"
+                      value={contactDetails.email}
+                      onChange={(e) => {
+                        setContactDetails({
+                          ...contactDetails,
+                          email: e.target.value,
+                        });
+                      }}
                       placeholder="example@gmail.com"
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
@@ -234,6 +335,13 @@ const PassengerDetails = () => {
                     <input
                       type="tel"
                       name="mobileNumber"
+                      value={contactDetails.phoneNumber}
+                      onChange={(e) => {
+                        setContactDetails({
+                          ...contactDetails,
+                          phoneNumber: e.target.value,
+                        });
+                      }}
                       placeholder="+91 00000 00000"
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
@@ -252,8 +360,20 @@ const PassengerDetails = () => {
                 <div className="mb-5 rounded-xl bg-slate-50 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xl font-bold text-slate-900">BOM</p>
-                      <p className="text-xs text-slate-500">Mumbai</p>
+                      <p className="text-xl font-bold text-slate-900">
+                        {" "}
+                        {
+                          flightData?.slices?.[0]?.segments?.[0]?.origin
+                            ?.iata_city_code
+                        }
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {" "}
+                        {
+                          flightData?.slices?.[0]?.segments?.[0]?.origin
+                            ?.city_name
+                        }
+                      </p>
                     </div>
 
                     <div className="flex flex-1 flex-col items-center px-3">
@@ -263,12 +383,29 @@ const PassengerDetails = () => {
                           ✈
                         </span>
                       </div>
-                      <span className="text-xs text-green-600">Non-stop</span>
+                      <span className="text-xs text-green-600">
+                        {flightData?.slices?.[0]?.segments?.[0]?.stops
+                          .length === 0
+                          ? "Non-Stop"
+                          : "Via"}
+                      </span>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-xl font-bold text-slate-900">DXB</p>
-                      <p className="text-xs text-slate-500">Dubai</p>
+                      <p className="text-xl font-bold text-slate-900">
+                        {" "}
+                        {
+                          flightData?.slices?.[0]?.segments?.[0]?.destination
+                            ?.iata_city_code
+                        }
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {" "}
+                        {
+                          flightData?.slices?.[0]?.segments?.[0]?.destination
+                            ?.city_name
+                        }
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -277,22 +414,28 @@ const PassengerDetails = () => {
                   <div className="flex justify-between">
                     <span className="text-slate-500">Passengers</span>
                     <span className="font-semibold text-slate-800">
-                      2 Adults
+                      {adults} Adults
                     </span>
                   </div>
 
                   <div className="flex justify-between">
                     <span className="text-slate-500">Base Fare</span>
-                    <span className="font-semibold text-slate-800">
-                      ₹ XX,XXX
-                    </span>
+                    {rate !== null && flightData?.base_amount && (
+                      <span className="font-semibold text-slate-800">
+                        ₹{" "}
+                        {currencyToINR(flightData.base_amount, rate).toFixed(2)}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex justify-between">
                     <span className="text-slate-500">Taxes & Fees</span>
-                    <span className="font-semibold text-slate-800">
-                      ₹ X,XXX
-                    </span>
+                    {rate !== null && flightData?.tax_amount && (
+                      <span className="font-semibold text-slate-800">
+                        ₹{" "}
+                        {currencyToINR(flightData.tax_amount, rate).toFixed(2)}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -300,12 +443,21 @@ const PassengerDetails = () => {
 
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800">Total Fare</span>
-                  <span className="text-2xl font-bold text-blue-600">
-                    ₹ XX,XXX
-                  </span>
+                  {rate !== null && flightData?.total_amount && (
+                    <span className="font-semibold text-slate-800">
+                      ₹{" "}
+                      {currencyToINR(flightData.total_amount, rate).toFixed(2)}
+                    </span>
+                  )}
                 </div>
 
-                <button className="mt-7 w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]">
+                <button
+                  className="mt-7 w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]"
+                  onClick={() => {
+                    handlePassengerDetails(passengerDetails);
+                    handleContactDetails(contactDetails);
+                  }}
+                >
                   Continue to Review →
                 </button>
 
