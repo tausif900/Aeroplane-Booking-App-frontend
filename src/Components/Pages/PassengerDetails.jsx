@@ -42,14 +42,58 @@ const PassengerDetails = () => {
   };
 
   const validatePassengers = () => {
-    const newError = {};
+    let newError = {};
     passengerDetails.forEach((p, idx) => {
       if (p.firstName.trim() === "") {
         newError[idx] = {
           firstName: "first name is required",
         };
       }
+      if (p.lastName.trim() === "") {
+        newError[idx] = {
+          ...newError[idx],
+          lastName: "last name is required",
+        };
+      }
+      if (p.dateOfBirth.trim() === "") {
+        newError[idx] = {
+          ...newError[idx],
+          dateOfBirth: "DOB is required",
+        };
+      }
+      if (p.gender.trim() === "") {
+        newError[idx] = {
+          ...newError[idx],
+          gender: "gender is required",
+        };
+      }
+      if (p.passportNumber.trim() === "") {
+        newError[idx] = {
+          ...newError[idx],
+          passportNumber: "passport number is required",
+        };
+      }
+      if (p.passportExpiryDate.trim() === "") {
+        newError[idx] = {
+          ...newError[idx],
+          passportExpiryDate: "passport expiry date is required",
+        };
+      }
+      if (p.nationality.trim() === "") {
+        newError[idx] = {
+          ...newError[idx],
+          nationality: "nationality is required",
+        };
+      }
     });
+
+    if (contactDetails.email === "") {
+      newError.email = "email is required";
+    }
+
+    if (contactDetails.phoneNumber === "") {
+      newError.phoneNumber = "phone number is required";
+    }
     setError(newError);
   };
 
@@ -149,6 +193,11 @@ const PassengerDetails = () => {
                           placeholder="Enter last name"
                           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
+                        {error[idx]?.lastName && (
+                          <p className="text-red-500 text-sm">
+                            {error[idx].lastName}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -169,6 +218,11 @@ const PassengerDetails = () => {
                           }}
                           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
+                        {error[idx]?.dateOfBirth && (
+                          <p className="text-red-500 text-sm">
+                            {error[idx].dateOfBirth}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -192,6 +246,11 @@ const PassengerDetails = () => {
                           <option value="female">Female</option>
                           <option value="other">Other</option>
                         </select>
+                        {error[idx]?.gender && (
+                          <p className="text-red-500 text-sm">
+                            {error[idx].gender}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -221,6 +280,11 @@ const PassengerDetails = () => {
                             placeholder="Enter passport number"
                             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           />
+                          {error[idx]?.passportNumber && (
+                            <p className="text-red-500 text-sm">
+                              {error[idx].passportNumber}
+                            </p>
+                          )}
                         </div>
 
                         <div>
@@ -241,6 +305,11 @@ const PassengerDetails = () => {
                             }}
                             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           />
+                          {error[idx]?.passportExpiryDate && (
+                            <p className="text-red-500 text-sm">
+                              {error[idx].passportExpiryDate}
+                            </p>
+                          )}
                         </div>
 
                         <div className="sm:col-span-2">
@@ -262,6 +331,11 @@ const PassengerDetails = () => {
                             placeholder="Enter nationality"
                             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           />
+                          {error[idx]?.nationality && (
+                            <p className="text-red-500 text-sm">
+                              {error[idx].nationality}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -345,6 +419,9 @@ const PassengerDetails = () => {
                       placeholder="example@gmail.com"
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
+                    {error?.email && (
+                      <p className="text-red-500 text-sm">{error.email}</p>
+                    )}
                   </div>
 
                   <div>
@@ -353,7 +430,7 @@ const PassengerDetails = () => {
                     </label>
                     <input
                       type="tel"
-                      name="mobileNumber"
+                      name="phoneNumber"
                       value={contactDetails.phoneNumber}
                       onChange={(e) => {
                         setContactDetails({
@@ -364,6 +441,11 @@ const PassengerDetails = () => {
                       placeholder="+91 00000 00000"
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
+                    {error?.phoneNumber && (
+                      <p className="text-red-500 text-sm">
+                        {error.phoneNumber}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
