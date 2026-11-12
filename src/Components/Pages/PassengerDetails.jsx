@@ -24,6 +24,8 @@ const PassengerDetails = () => {
     })),
   );
 
+  const [error, setError] = useState({});
+
   const [contactDetails, setContactDetails] = useState({
     email: "",
     phoneNumber: "",
@@ -37,6 +39,18 @@ const PassengerDetails = () => {
 
   const handleContactDetails = (data) => {
     console.log(data);
+  };
+
+  const validatePassengers = () => {
+    const newError = {};
+    passengerDetails.forEach((p, idx) => {
+      if (p.firstName.trim() === "") {
+        newError[idx] = {
+          firstName: "first name is required",
+        };
+      }
+    });
+    setError(newError);
   };
 
   useEffect(() => {
@@ -109,6 +123,11 @@ const PassengerDetails = () => {
                           name="firstName"
                           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
+                        {error[idx]?.firstName && (
+                          <p className="text-red-500 text-sm">
+                            {error[idx].firstName}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -456,6 +475,7 @@ const PassengerDetails = () => {
                   onClick={() => {
                     handlePassengerDetails(passengerDetails);
                     handleContactDetails(contactDetails);
+                    validatePassengers();
                   }}
                 >
                   Continue to Review →
