@@ -43,7 +43,7 @@ const FlightsPage = () => {
 
   const cabinClass =
     offers[0].slices[0]?.segments[0]?.passengers[0]?.cabin_class_marketing_name;
-  
+
   let startIndex = (currentPage - 1) * flightsPerPage;
   let endIndex = startIndex + flightsPerPage;
 
@@ -361,9 +361,6 @@ const FlightsPage = () => {
                                 rate,
                               ).toFixed(2)}
                             </h3>
-                            <p className="text-xs text-slate-500">
-                              Per passenger
-                            </p>
                           </div>
                         </div>
                         <button

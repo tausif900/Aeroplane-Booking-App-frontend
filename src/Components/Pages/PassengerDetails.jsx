@@ -4,6 +4,8 @@ import {
   currencyToINR,
   fetchExchangeRate,
 } from "../../Utils/currencyExchangeUtils";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const PassengerDetails = () => {
   const location = useLocation();
@@ -33,13 +35,13 @@ const PassengerDetails = () => {
 
   const [rate, setRate] = useState(null);
 
-  const handlePassengerDetails = (data) => {
-    console.log(data);
-  };
+  // const handlePassengerDetails = (data) => {
+  //   console.log(data);
+  // };
 
-  const handleContactDetails = (data) => {
-    console.log(data);
-  };
+  // const handleContactDetails = (data) => {
+  //   console.log(data);
+  // };
 
   const validatePassengers = () => {
     let newError = {};
@@ -95,6 +97,24 @@ const PassengerDetails = () => {
       newError.phoneNumber = "phone number is required";
     }
     setError(newError);
+  };
+
+  const createBooking = async ({ flightId, passenger, email, phoneNumber }) => {
+    try {
+      const data = { flightId, passenger, email, phoneNumber };
+      console.log(data);
+      const response = await axios.post(
+        "http://localhost:8080/bookings/create-booking",
+        data,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
   };
 
   useEffect(() => {
@@ -555,9 +575,13 @@ const PassengerDetails = () => {
                 <button
                   className="mt-7 w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]"
                   onClick={() => {
-                    handlePassengerDetails(passengerDetails);
-                    handleContactDetails(contactDetails);
                     validatePassengers();
+                    createBooking({
+                      flightId: flightData?.id,
+                      passenger: passengerDetails,
+                      email: contactDetails.email,
+                      phoneNumber: contactDetails.phoneNumber,
+                    });
                   }}
                 >
                   Continue to Review →
