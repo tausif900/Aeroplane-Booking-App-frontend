@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  currencyToINR,
-  fetchExchangeRate,
-} from "../../Utils/currencyExchangeUtils";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -33,15 +29,9 @@ const PassengerDetails = () => {
     phoneNumber: "",
   });
 
-  const [rate, setRate] = useState(null);
-
-  // const handlePassengerDetails = (data) => {
-  //   console.log(data);
-  // };
-
-  // const handleContactDetails = (data) => {
-  //   console.log(data);
-  // };
+  const [baseAmount, setBaseAmount] = useState(0);
+  const [taxAmount, setTaxAmount] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const validatePassengers = () => {
     let newError = {};
@@ -111,19 +101,16 @@ const PassengerDetails = () => {
         },
       );
       console.log(response.data);
+      setBaseAmount(response.data.baseAmount);
+      setTaxAmount(response.data.taxAmount);
+      setTotalAmount(response.data.totalAmount);
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
   };
 
-  useEffect(() => {
-    const getRate = async () => {
-      const exchangeRate = await fetchExchangeRate();
-      setRate(exchangeRate);
-    };
-    getRate();
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -150,7 +137,7 @@ const PassengerDetails = () => {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Passenger Forms */}
             <div className="space-y-6 lg:col-span-2">
-              {/* Passenger 1 */}
+              {/* Passenger  */}
               {passengerDetails.map((p, idx) => {
                 return (
                   <div
@@ -541,22 +528,18 @@ const PassengerDetails = () => {
 
                   <div className="flex justify-between">
                     <span className="text-slate-500">Base Fare</span>
-                    {rate !== null && flightData?.base_amount && (
-                      <span className="font-semibold text-slate-800">
-                        ₹{" "}
-                        {currencyToINR(flightData.base_amount, rate).toFixed(2)}
-                      </span>
-                    )}
+
+                    <span className="font-semibold text-slate-800">
+                      ₹ {baseAmount}
+                    </span>
                   </div>
 
                   <div className="flex justify-between">
                     <span className="text-slate-500">Taxes & Fees</span>
-                    {rate !== null && flightData?.tax_amount && (
-                      <span className="font-semibold text-slate-800">
-                        ₹{" "}
-                        {currencyToINR(flightData.tax_amount, rate).toFixed(2)}
-                      </span>
-                    )}
+
+                    <span className="font-semibold text-slate-800">
+                      ₹ {taxAmount}
+                    </span>
                   </div>
                 </div>
 
@@ -564,12 +547,10 @@ const PassengerDetails = () => {
 
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800">Total Fare</span>
-                  {rate !== null && flightData?.total_amount && (
-                    <span className="font-semibold text-slate-800">
-                      ₹{" "}
-                      {currencyToINR(flightData.total_amount, rate).toFixed(2)}
-                    </span>
-                  )}
+
+                  <span className="font-semibold text-slate-800">
+                    ₹ {totalAmount}
+                  </span>
                 </div>
 
                 <button
