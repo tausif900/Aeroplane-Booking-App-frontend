@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -9,6 +9,8 @@ const PassengerDetails = () => {
   console.log(adults);
   const flightData = location.state?.flightData;
   console.log(flightData);
+  const flightId = flightData.id;
+  const navigate = useNavigate();
 
   const [passengerDetails, setPassengerDetails] = useState(
     Array.from({ length: adults }, () => ({
@@ -29,9 +31,11 @@ const PassengerDetails = () => {
     phoneNumber: "",
   });
 
-  const [baseAmount, setBaseAmount] = useState(0);
-  const [taxAmount, setTaxAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [rate, setRate] = useState({
+    baseAmount: 0,
+    taxAmount: 0,
+    totalAmount: 0,
+  });
 
   const validatePassengers = () => {
     let newError = {};
@@ -89,6 +93,21 @@ const PassengerDetails = () => {
     setError(newError);
   };
 
+  const getRate = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/bookings/get-rate/${flightId}`,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log(response.data);
+      setRate(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const createBooking = async ({ flightId, passenger, email, phoneNumber }) => {
     try {
       const data = { flightId, passenger, email, phoneNumber };
@@ -101,16 +120,16 @@ const PassengerDetails = () => {
         },
       );
       console.log(response.data);
-      setBaseAmount(response.data.baseAmount);
-      setTaxAmount(response.data.taxAmount);
-      setTotalAmount(response.data.totalAmount);
+      // navigate(`/booking-review/${response.data.bookingId}`);
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getRate();
+  }, []);
 
   return (
     <>
@@ -530,7 +549,7 @@ const PassengerDetails = () => {
                     <span className="text-slate-500">Base Fare</span>
 
                     <span className="font-semibold text-slate-800">
-                      ₹ {baseAmount}
+                      ₹ {rate?.baseAmount}
                     </span>
                   </div>
 
@@ -538,7 +557,7 @@ const PassengerDetails = () => {
                     <span className="text-slate-500">Taxes & Fees</span>
 
                     <span className="font-semibold text-slate-800">
-                      ₹ {taxAmount}
+                      ₹ {rate?.taxAmount}
                     </span>
                   </div>
                 </div>
@@ -549,7 +568,7 @@ const PassengerDetails = () => {
                   <span className="font-bold text-slate-800">Total Fare</span>
 
                   <span className="font-semibold text-slate-800">
-                    ₹ {totalAmount}
+                    ₹ {rate?.totalAmount}
                   </span>
                 </div>
 

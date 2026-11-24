@@ -9,6 +9,7 @@ import PassengerPage from "./Components/Pages/PassengerPage";
 import FlightsPage from "./Components/Pages/FlightsPage";
 import FlightById from "./Components/Pages/FlightById";
 import PassengerDetails from "./Components/Pages/PassengerDetails";
+import BookingReview from "./Components/Pages/BookingReview";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
   { path: "/searched-flights", element: <FlightsPage /> },
   { path: "/flight/:flightId", element: <FlightById /> },
   { path: "/passenger-details", element: <PassengerDetails /> },
+  { path: "/booking-review/:bookingId", element: <BookingReview /> },
 ]);
 const App = () => {
   return (
