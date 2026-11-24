@@ -120,7 +120,7 @@ const PassengerDetails = () => {
         },
       );
       console.log(response.data);
-      // navigate(`/booking-review/${response.data.bookingId}`);
+      navigate(`/booking-review/${response.data.bookingId}`);
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
