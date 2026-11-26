@@ -91,6 +91,7 @@ const PassengerDetails = () => {
       newError.phoneNumber = "phone number is required";
     }
     setError(newError);
+    return Object.keys(newError).length === 0;
   };
 
   const getRate = async () => {
@@ -109,6 +110,12 @@ const PassengerDetails = () => {
   };
 
   const createBooking = async ({ flightId, passenger, email, phoneNumber }) => {
+    const isValidate = validatePassengers();
+
+    if (!isValidate) {
+      alert("Fill the details first!!!");
+      return;
+    }
     try {
       const data = { flightId, passenger, email, phoneNumber };
       console.log(data);
@@ -573,9 +580,9 @@ const PassengerDetails = () => {
                 </div>
 
                 <button
+                  type="button"
                   className="mt-7 w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]"
                   onClick={() => {
-                    validatePassengers();
                     createBooking({
                       flightId: flightData?.id,
                       passenger: passengerDetails,
