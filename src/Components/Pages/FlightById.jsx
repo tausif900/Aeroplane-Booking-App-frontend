@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Await, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   currencyToINR,
@@ -50,292 +50,260 @@ const FlightById = () => {
     getRate();
   }, []);
 
+  const segment = flight?.slices?.[0]?.segments?.[0];
+
   return (
-    <>
-      {" "}
-      <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-10">
-        <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <p className="text-sm font-semibold text-blue-600 mb-2">
-              FLIGHT DETAILS
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Your Flight Information
-            </h1>
-            <p className="text-slate-500 mt-2">
-              Review your itinerary and baggage information.
-            </p>
-          </div>
+    <div className="min-vh-100 bg-body-tertiary py-4 py-md-5">
+      <div className="container">
+        {/* Header */}
+        <div className="mb-4">
+          <p className="small fw-semibold text-primary text-uppercase mb-1">
+            FLIGHT DETAILS
+          </p>
+          <h1 className="h2 fw-bold text-body mb-1">Your Flight Information</h1>
+          <p className="text-body-secondary mb-0">
+            Review your itinerary and baggage information.
+          </p>
+        </div>
 
-          {/* Airline Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center text-3xl">
-                ✈️
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  {flight?.owner?.name}
-                </h2>
-                <p className="text-sm text-slate-500">
-                  Flight Offer Information
-                </p>
-              </div>
-              <span className="ml-auto bg-green-50 text-green-700 text-xs font-semibold px-3 py-2 rounded-full">
-                Available
-              </span>
+        {/* Airline Card */}
+        <div className="card border-0 shadow-sm rounded-4 mb-4">
+          <div className="card-body p-3 p-sm-4 d-flex flex-wrap align-items-center gap-3">
+            <div
+              className="bg-primary-subtle rounded-3 d-flex align-items-center justify-content-center fs-3 flex-shrink-0"
+              style={{ width: "52px", height: "52px" }}
+            >
+              ✈️
             </div>
-          </div>
-
-          {/* Journey Details */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-lg font-bold text-slate-900">
-                Journey Details
+            <div>
+              <h2 className="h5 fw-bold text-body mb-0">
+                {flight?.owner?.name}
               </h2>
-              <span className="text-sm text-blue-600 font-semibold">3h 9m</span>
+              <p className="small text-body-secondary mb-0">
+                Flight Offer Information
+              </p>
+            </div>
+            <span className="badge bg-success-subtle text-success fw-semibold px-3 py-2 rounded-pill ms-auto">
+              Available
+            </span>
+          </div>
+        </div>
+
+        {/* Journey Details */}
+        <div className="card border-0 shadow-sm rounded-4 mb-4">
+          <div className="card-body p-3 p-sm-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h2 className="h5 fw-bold text-body mb-0">Journey Details</h2>
+              <span className="small text-primary fw-semibold">3h 9m</span>
             </div>
 
-            <div className="grid grid-cols-[1fr_auto_1fr] gap-4 items-center">
-              <div>
-                <h3 className="text-3xl font-bold text-slate-900">
-                  {flight?.slices?.[0]?.segments?.[0]?.origin?.iata_city_code}
+            <div className="row g-3 align-items-center">
+              {/* Origin */}
+              <div className="col-12 col-sm-5">
+                <h3 className="h2 fw-bold text-body mb-1">
+                  {segment?.origin?.iata_city_code}
                 </h3>
-                <p className="text-sm text-slate-500 mt-1">
-                  {" "}
-                  {flight?.slices?.[0]?.segments?.[0]?.origin?.city_name},{" "}
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.origin
-                      ?.iata_country_code
-                  }
+                <p className="small text-body-secondary mb-1">
+                  {segment?.origin?.city_name},{" "}
+                  {segment?.origin?.iata_country_code}
                 </p>
-                <p className="text-sm text-slate-500 mt-1">
-                  {" "}
-                  {flight?.slices?.[0]?.segments?.[0]?.origin?.name}{" "}
+                <p className="small text-body-secondary mb-2">
+                  {segment?.origin?.name}
                 </p>
-                <p className="text-lg font-semibold mt-3">
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.departing_at.split(
-                      "T",
-                    )[1]
-                  }
+                <p className="h5 fw-semibold mb-0">
+                  {segment?.departing_at?.split("T")?.[1]}
                 </p>
-                <p className="text-xs text-slate-400">
-                  {flight?.slices?.[0]?.segments?.[0]?.departing_at &&
-                    formattedDate(
-                      flight.slices[0].segments[0].departing_at.split("T")[0],
-                    )}
+                <p className="small text-secondary mb-0">
+                  {segment?.departing_at &&
+                    formattedDate(segment.departing_at.split("T")[0])}
                 </p>
               </div>
 
-              <div className="flex flex-col items-center">
-                <span className="text-xs font-semibold text-green-600 mb-3">
-                  {flight?.slices?.[0]?.segments?.[0]?.stops?.length === 0
-                    ? "Non-Stop"
-                    : "Via"}
+              {/* Flight Path */}
+              <div className="col-12 col-sm-2 d-flex flex-column align-items-center text-center">
+                <span className="small fw-semibold text-success mb-2">
+                  {segment?.stops?.length === 0 ? "Non-Stop" : "Via"}
                 </span>
-                <div className="flex items-center w-24 sm:w-40">
-                  <div className="h-px bg-slate-300 flex-1" />
-                  <span className="text-blue-600 text-2xl px-2">✈</span>
-                  <div className="h-px bg-slate-300 flex-1" />
+                <div className="d-flex align-items-center w-100">
+                  <div className="border-top flex-grow-1" />
+                  <span className="text-primary fs-4 px-2">✈</span>
+                  <div className="border-top flex-grow-1" />
                 </div>
-                <span className="text-xs text-slate-400 mt-3">
-                  {flight?.slices?.[0]?.segments?.[0]?.stops?.length === 0
-                    ? "Direct Flight"
-                    : "Via"}
+                <span className="small text-secondary mt-2">
+                  {segment?.stops?.length === 0 ? "Direct Flight" : "Via"}
                 </span>
               </div>
 
-              <div className="text-right">
-                <h3 className="text-3xl font-bold text-slate-900">
-                  {" "}
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.destination
-                      ?.iata_city_code
-                  }
+              {/* Destination */}
+              <div className="col-12 col-sm-5 text-start text-sm-end">
+                <h3 className="h2 fw-bold text-body mb-1">
+                  {segment?.destination?.iata_city_code}
                 </h3>
-                <p className="text-sm text-slate-500 mt-1">
-                  {" "}
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.destination?.city_name
-                  },{" "}
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.destination
-                      ?.iata_country_code
-                  }
+                <p className="small text-body-secondary mb-1">
+                  {segment?.destination?.city_name},{" "}
+                  {segment?.destination?.iata_country_code}
                 </p>
-                <p className="text-sm text-slate-500 mt-1">
-                  {" "}
-                  {flight?.slices?.[0]?.segments?.[0]?.destination?.name}{" "}
+                <p className="small text-body-secondary mb-2">
+                  {segment?.destination?.name}
                 </p>
-                <p className="text-lg font-semibold mt-3">
-                  {" "}
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.arriving_at.split(
-                      "T",
-                    )[1]
-                  }
+                <p className="h5 fw-semibold mb-0">
+                  {segment?.arriving_at?.split("T")?.[1]}
                 </p>
-                <p className="text-xs text-slate-400">
-                  {flight?.slices?.[0]?.segments?.[0]?.arriving_at &&
-                    formattedDate(
-                      flight.slices[0].segments[0].arriving_at.split("T")[0],
-                    )}
+                <p className="small text-secondary mb-0">
+                  {segment?.arriving_at &&
+                    formattedDate(segment.arriving_at.split("T")[0])}
                 </p>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Flight Segments */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-5">
-              Flight Information
-            </h2>
+        {/* Flight Segments */}
+        <div className="card border-0 shadow-sm rounded-4 mb-4">
+          <div className="card-body p-3 p-sm-4">
+            <h2 className="h5 fw-bold text-body mb-3">Flight Information</h2>
 
-            <div className="bg-slate-50 rounded-xl p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center text-2xl">
+            <div className="bg-body-tertiary rounded-3 p-3 p-sm-4">
+              <div className="d-flex align-items-center gap-3">
+                <div
+                  className="rounded-3 bg-white border d-flex align-items-center justify-content-center fs-4 flex-shrink-0"
+                  style={{ width: "48px", height: "48px" }}
+                >
                   ✈️
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-800">
+                  <h3 className="h6 fw-bold text-body mb-0">
                     {flight?.owner?.name}
                   </h3>
-                  <p className="text-sm text-slate-500">
-                    Flight No.{" "}
-                    {
-                      flight?.slices?.[0]?.segments?.[0]
-                        ?.marketing_carrier_flight_number
-                    }
+                  <p className="small text-body-secondary mb-0">
+                    Flight No. {segment?.marketing_carrier_flight_number}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 mt-6">
-                <div>
-                  <p className="text-xs text-slate-500">Departure</p>
-                  <h3 className="font-bold text-slate-900 mt-1">
-                    {flight?.slices?.[0]?.segments?.[0]?.origin?.iata_city_code}
+              <div className="row g-3 mt-3">
+                <div className="col-6">
+                  <p className="small text-body-secondary mb-1">Departure</p>
+                  <h3 className="h5 fw-bold text-body mb-1">
+                    {segment?.origin?.iata_city_code}
                   </h3>
-                  <p className="text-sm text-slate-500">
-                    Terminal{" "}
-                    {flight?.slices?.[0]?.segments?.[0]?.origin_terminal}
+                  <p className="small text-body-secondary mb-0">
+                    Terminal {segment?.origin_terminal}
                   </p>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-500">Arrival</p>
-                  <h3 className="font-bold text-slate-900 mt-1">
-                    {
-                      flight?.slices?.[0]?.segments?.[0]?.destination
-                        ?.iata_city_code
-                    }
+                <div className="col-6">
+                  <p className="small text-body-secondary mb-1">Arrival</p>
+                  <h3 className="h5 fw-bold text-body mb-1">
+                    {segment?.destination?.iata_city_code}
                   </h3>
-                  <p className="text-sm text-slate-500">
-                    Terminal{" "}
-                    {flight?.slices?.[0]?.segments?.[0]?.destination_terminal}
+                  <p className="small text-body-secondary mb-0">
+                    Terminal {segment?.destination_terminal}
                   </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Baggage Information */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-5">
-              Baggage & Cabin Information
+        {/* Baggage Information */}
+        <div className="card border-0 shadow-sm rounded-4 mb-4">
+          <div className="card-body p-3 p-sm-4">
+            <h2 className="h5 fw-bold text-body mb-3">
+              Baggage &amp; Cabin Information
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-slate-50 rounded-xl p-5">
-                <span className="text-2xl">🧳</span>
-                <p className="text-sm text-slate-500 mt-3">Checked Baggage</p>
-                <h3 className="text-lg font-bold text-slate-900">
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.passengers?.[0]
-                      ?.baggages?.[0]?.quantity
-                  }{" "}
-                  Bag
-                </h3>
+            <div className="row g-3">
+              <div className="col-12 col-sm-4">
+                <div className="bg-body-tertiary rounded-3 p-3 p-sm-4 h-100">
+                  <span className="fs-3 d-block">🧳</span>
+                  <p className="small text-body-secondary mt-2 mb-1">
+                    Checked Baggage
+                  </p>
+                  <h3 className="h5 fw-bold text-body mb-0">
+                    {segment?.passengers?.[0]?.baggages?.[0]?.quantity} Bag
+                  </h3>
+                </div>
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-5">
-                <span className="text-2xl">🎒</span>
-                <p className="text-sm text-slate-500 mt-3">Cabin Baggage</p>
-                <h3 className="text-lg font-bold text-slate-900">
-                  {" "}
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.passengers?.[0]
-                      ?.baggages?.[0]?.quantity
-                  }{" "}
-                  Bag
-                </h3>
+              <div className="col-12 col-sm-4">
+                <div className="bg-body-tertiary rounded-3 p-3 p-sm-4 h-100">
+                  <span className="fs-3 d-block">🎒</span>
+                  <p className="small text-body-secondary mt-2 mb-1">
+                    Cabin Baggage
+                  </p>
+                  <h3 className="h5 fw-bold text-body mb-0">
+                    {segment?.passengers?.[0]?.baggages?.[0]?.quantity} Bag
+                  </h3>
+                </div>
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-5">
-                <span className="text-2xl">💺</span>
-                <p className="text-sm text-slate-500 mt-3">Cabin Class</p>
-                <h3 className="text-lg font-bold text-slate-900">
-                  {
-                    flight?.slices?.[0]?.segments?.[0]?.passengers?.[0]
-                      ?.cabin_class_marketing_name
-                  }
-                </h3>
+              <div className="col-12 col-sm-4">
+                <div className="bg-body-tertiary rounded-3 p-3 p-sm-4 h-100">
+                  <span className="fs-3 d-block">💺</span>
+                  <p className="small text-body-secondary mt-2 mb-1">
+                    Cabin Class
+                  </p>
+                  <h3 className="h5 fw-bold text-body mb-0">
+                    {segment?.passengers?.[0]?.cabin_class_marketing_name}
+                  </h3>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Fare Summary */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-5">
-              Fare Summary
-            </h2>
+        {/* Fare Summary */}
+        <div className="card border-0 shadow-sm rounded-4">
+          <div className="card-body p-3 p-sm-4">
+            <h2 className="h5 fw-bold text-body mb-3">Fare Summary</h2>
 
-            <div className="flex justify-between mb-3 text-sm">
-              <span className="text-slate-500">Base Fare</span>
-
+            <div className="d-flex justify-content-between mb-2 small">
+              <span className="text-body-secondary">Base Fare</span>
               {rate !== null && flight?.base_amount && (
-                <span className="font-semibold">
+                <span className="fw-semibold">
                   ₹ {currencyToINR(flight.base_amount, rate).toFixed(2)}
                 </span>
               )}
             </div>
 
-            <div className="flex justify-between mb-5 text-sm">
-              <span className="text-slate-500">Taxes & Charges</span>
+            <div className="d-flex justify-content-between mb-3 small">
+              <span className="text-body-secondary">Taxes &amp; Charges</span>
               {rate !== null && flight?.tax_amount && (
-                <span className="font-semibold">
+                <span className="fw-semibold">
                   ₹ {currencyToINR(flight.tax_amount, rate).toFixed(2)}
                 </span>
               )}
             </div>
 
-            <div className="border-t pt-5 flex justify-between items-center">
-              <span className="font-bold text-slate-900">Total Amount</span>
-
+            <div className="border-top pt-3 mb-4 d-flex justify-content-between align-items-center">
+              <span className="fw-bold text-body">Total Amount</span>
               {rate !== null && flight?.total_amount && (
-                <span className="text-2xl font-bold text-blue-600">
+                <span className="fs-3 fw-bold text-primary">
                   ₹ {currencyToINR(flight.total_amount, rate).toFixed(2)}
                 </span>
               )}
             </div>
-            <button
-              className="w-1/4 rounded-xl bg-blue-600 px-6 py-3 mx-100 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]"
-              onClick={() =>
-                navigate("/passenger-details", {
-                  state: {
-                    adults: flight.passengers.length,
-                    flightData: flight,
-                  },
-                })
-              }
-            >
-              Book Now
-            </button>
+
+            <div className="d-flex justify-content-end">
+              <button
+                type="button"
+                className="btn btn-primary btn-lg px-4 py-2 fw-semibold shadow-sm w-100 w-sm-auto"
+                onClick={() =>
+                  navigate("/passenger-details", {
+                    state: {
+                      adults: flight.passengers.length,
+                      flightData: flight,
+                    },
+                  })
+                }
+              >
+                Book Now
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

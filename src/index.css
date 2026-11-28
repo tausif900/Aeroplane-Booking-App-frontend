@@ -1,1 +1,39 @@
-@import "tailwindcss";
+/* Bootstrap 5.3 is loaded from main.jsx. */
+body {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+
+a { text-decoration: none; }
+
+.auth-layout { max-width: 1140px; }
+.auth-visual { min-height: 560px; }
+.auth-icon { width: 3rem; height: 3rem; }
+.auth-field-icon { top: 50%; left: 1rem; transform: translateY(-50%); }
+.auth-input { padding-left: 3rem; }
+.hero-section { background: linear-gradient(120deg, #061b43, #0d6efd); }
+.hero-section { isolation: isolate; min-height: 34rem; }
+.hero-media { z-index: -2; }
+.hero-shade { z-index: -1; background: linear-gradient(90deg, rgb(3 20 51 / 88%), rgb(3 20 51 / 35%)); }
+.hero-copy { max-width: 46rem; }
+.destination-card { min-height: 18rem; }
+.feature-icon, .step-icon { width: 3.5rem; height: 3.5rem; }
+.flight-timeline { min-width: 5rem; }
+
+@media (max-width: 575.98px) {
+  .auth-layout { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+  .destination-card { min-height: 14rem; }
+}
+
+.flight-card,
+.booking-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  background: var(--bs-body-bg);
+  box-shadow: 0 .125rem .5rem rgb(0 0 0 / 7%);
+}
+
+.hero-section {
+  background: linear-gradient(120deg, #061b43, #0d6efd);
+  color: white;
+}

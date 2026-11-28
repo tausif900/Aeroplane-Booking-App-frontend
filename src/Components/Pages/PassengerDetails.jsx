@@ -9,7 +9,7 @@ const PassengerDetails = () => {
   console.log(adults);
   const flightData = location.state?.flightData;
   console.log(flightData);
-  const flightId = flightData.id;
+  const flightId = flightData?.id;
   const navigate = useNavigate();
 
   const [passengerDetails, setPassengerDetails] = useState(
@@ -38,17 +38,18 @@ const PassengerDetails = () => {
   });
 
   const validatePassengers = () => {
-    let newError = {};
+    const newError = {};
     passengerDetails.forEach((p, idx) => {
       if (p.firstName.trim() === "") {
         newError[idx] = {
-          firstName: "first name is required",
+          ...newError[idx],
+          firstName: "First name is required",
         };
       }
       if (p.lastName.trim() === "") {
         newError[idx] = {
           ...newError[idx],
-          lastName: "last name is required",
+          lastName: "Last name is required",
         };
       }
       if (p.dateOfBirth.trim() === "") {
@@ -60,41 +61,42 @@ const PassengerDetails = () => {
       if (p.gender.trim() === "") {
         newError[idx] = {
           ...newError[idx],
-          gender: "gender is required",
+          gender: "Gender is required",
         };
       }
       if (p.passportNumber.trim() === "") {
         newError[idx] = {
           ...newError[idx],
-          passportNumber: "passport number is required",
+          passportNumber: "Passport number is required",
         };
       }
       if (p.passportExpiryDate.trim() === "") {
         newError[idx] = {
           ...newError[idx],
-          passportExpiryDate: "passport expiry date is required",
+          passportExpiryDate: "Passport expiry date is required",
         };
       }
       if (p.nationality.trim() === "") {
         newError[idx] = {
           ...newError[idx],
-          nationality: "nationality is required",
+          nationality: "Nationality is required",
         };
       }
     });
 
-    if (contactDetails.email === "") {
-      newError.email = "email is required";
+    if (contactDetails.email.trim() === "") {
+      newError.email = "Email is required";
     }
 
-    if (contactDetails.phoneNumber === "") {
-      newError.phoneNumber = "phone number is required";
+    if (contactDetails.phoneNumber.trim() === "") {
+      newError.phoneNumber = "Phone number is required";
     }
     setError(newError);
     return Object.keys(newError).length === 0;
   };
 
   const getRate = async () => {
+    if (!flightId) return;
     try {
       const response = await axios.get(
         `http://localhost:8080/bookings/get-rate/${flightId}`,
@@ -104,8 +106,8 @@ const PassengerDetails = () => {
       );
       console.log(response.data);
       setRate(response.data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -128,315 +130,293 @@ const PassengerDetails = () => {
       );
       console.log(response.data);
       navigate(`/booking-review/${response.data.bookingId}`);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
       toast.error("Something went wrong");
     }
   };
 
   useEffect(() => {
     getRate();
-  }, []);
+  }, [flightId]);
+
+  const segment = flightData?.slices?.[0]?.segments?.[0];
 
   return (
-    <>
-      {" "}
-      <div className="min-h-screen bg-slate-50 px-4 py-10">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900">
-              Passenger Details
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Enter passenger information exactly as mentioned on your travel
-              documents.
-            </p>
-          </div>
+    <div className="min-vh-100 bg-body-tertiary py-4 py-md-5">
+      <div className="container">
+        <div className="mb-4">
+          <h1 className="h2 fw-bold text-body mb-1">Passenger Details</h1>
+          <p className="text-body-secondary mb-0">
+            Enter passenger information exactly as mentioned on your travel
+            documents.
+          </p>
+        </div>
 
-          {/* Progress Bar */}
-          <div className="mb-10 flex items-center gap-3">
-            <div className="h-2 flex-1 rounded-full bg-blue-600"></div>
-            <div className="h-2 flex-1 rounded-full bg-slate-200"></div>
-            <div className="h-2 flex-1 rounded-full bg-slate-200"></div>
-          </div>
+        <div className="row g-4 align-items-start">
+          {/* Passenger Forms */}
+          <div className="col-12 col-lg-8 d-flex flex-column gap-4">
+            {passengerDetails.map((p, idx) => (
+              <div className="card border-0 rounded-4 shadow-sm" key={idx}>
+                <div className="card-body p-3 p-sm-4">
+                  <div className="mb-4 d-flex align-items-center justify-content-between">
+                    <h2 className="h5 fw-bold text-body mb-0">
+                      Passenger {idx + 1}
+                    </h2>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {/* Passenger Forms */}
-            <div className="space-y-6 lg:col-span-2">
-              {/* Passenger  */}
-              {passengerDetails.map((p, idx) => {
-                return (
-                  <div
-                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                    key={idx}
-                  >
-                    <div className="mb-6 flex items-center justify-between">
-                      <h2 className="text-lg font-bold text-slate-800">
-                        Passenger {idx + 1}
-                      </h2>
+                    <span className="badge rounded-pill bg-primary-subtle px-3 py-2 fw-semibold text-primary">
+                      Adult
+                    </span>
+                  </div>
 
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
-                        Adult
-                      </span>
+                  <div className="row g-3">
+                    <div className="col-12 col-sm-6">
+                      <label className="form-label small fw-medium text-body">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        value={p.firstName}
+                        onChange={(e) => {
+                          const updatedPassengers = [...passengerDetails];
+                          updatedPassengers[idx] = {
+                            ...updatedPassengers[idx],
+                            firstName: e.target.value,
+                          };
+                          setPassengerDetails(updatedPassengers);
+                        }}
+                        placeholder="Enter first name"
+                        name="firstName"
+                        className={`form-control py-2 ${
+                          error[idx]?.firstName ? "is-invalid" : ""
+                        }`}
+                      />
+                      {error[idx]?.firstName && (
+                        <div className="invalid-feedback d-block">
+                          {error[idx].firstName}
+                        </div>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                      <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">
-                          First Name
+                    <div className="col-12 col-sm-6">
+                      <label className="form-label small fw-medium text-body">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={p.lastName}
+                        onChange={(e) => {
+                          const updatedPassengers = [...passengerDetails];
+                          updatedPassengers[idx] = {
+                            ...updatedPassengers[idx],
+                            lastName: e.target.value,
+                          };
+                          setPassengerDetails(updatedPassengers);
+                        }}
+                        placeholder="Enter last name"
+                        className={`form-control py-2 ${
+                          error[idx]?.lastName ? "is-invalid" : ""
+                        }`}
+                      />
+                      {error[idx]?.lastName && (
+                        <div className="invalid-feedback d-block">
+                          {error[idx].lastName}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="col-12 col-sm-6">
+                      <label className="form-label small fw-medium text-body">
+                        Date of Birth
+                      </label>
+                      <input
+                        type="date"
+                        name="dateOfBirth"
+                        value={p.dateOfBirth}
+                        onChange={(e) => {
+                          const updatedPassengers = [...passengerDetails];
+                          updatedPassengers[idx] = {
+                            ...updatedPassengers[idx],
+                            dateOfBirth: e.target.value,
+                          };
+                          setPassengerDetails(updatedPassengers);
+                        }}
+                        className={`form-control py-2 ${
+                          error[idx]?.dateOfBirth ? "is-invalid" : ""
+                        }`}
+                      />
+                      {error[idx]?.dateOfBirth && (
+                        <div className="invalid-feedback d-block">
+                          {error[idx].dateOfBirth}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="col-12 col-sm-6">
+                      <label className="form-label small fw-medium text-body">
+                        Gender
+                      </label>
+                      <select
+                        className={`form-select py-2 ${
+                          error[idx]?.gender ? "is-invalid" : ""
+                        }`}
+                        value={p.gender}
+                        onChange={(e) => {
+                          const updatedPassengers = [...passengerDetails];
+                          updatedPassengers[idx] = {
+                            ...updatedPassengers[idx],
+                            gender: e.target.value,
+                          };
+                          setPassengerDetails(updatedPassengers);
+                        }}
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                      {error[idx]?.gender && (
+                        <div className="invalid-feedback d-block">
+                          {error[idx].gender}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Passport Details */}
+                  <div className="mt-4 border-top pt-4">
+                    <h3 className="h6 fw-semibold text-body mb-3">
+                      Travel Document Details
+                    </h3>
+
+                    <div className="row g-3">
+                      <div className="col-12 col-sm-6">
+                        <label className="form-label small fw-medium text-body">
+                          Passport Number
                         </label>
                         <input
                           type="text"
-                          value={p.firstName}
+                          name="passportNumber"
+                          value={p.passportNumber}
                           onChange={(e) => {
                             const updatedPassengers = [...passengerDetails];
                             updatedPassengers[idx] = {
                               ...updatedPassengers[idx],
-                              firstName: e.target.value,
+                              passportNumber: e.target.value,
                             };
                             setPassengerDetails(updatedPassengers);
                           }}
-                          placeholder="Enter first name"
-                          name="firstName"
-                          className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          placeholder="Enter passport number"
+                          className={`form-control py-2 ${
+                            error[idx]?.passportNumber ? "is-invalid" : ""
+                          }`}
                         />
-                        {error[idx]?.firstName && (
-                          <p className="text-red-500 text-sm">
-                            {error[idx].firstName}
-                          </p>
+                        {error[idx]?.passportNumber && (
+                          <div className="invalid-feedback d-block">
+                            {error[idx].passportNumber}
+                          </div>
                         )}
                       </div>
 
-                      <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={p.lastName}
-                          onChange={(e) => {
-                            const updatedPassengers = [...passengerDetails];
-                            updatedPassengers[idx] = {
-                              ...updatedPassengers[idx],
-                              lastName: e.target.value,
-                            };
-                            setPassengerDetails(updatedPassengers);
-                          }}
-                          placeholder="Enter last name"
-                          className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        />
-                        {error[idx]?.lastName && (
-                          <p className="text-red-500 text-sm">
-                            {error[idx].lastName}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">
-                          Date of Birth
+                      <div className="col-12 col-sm-6">
+                        <label className="form-label small fw-medium text-body">
+                          Passport Expiry Date
                         </label>
                         <input
                           type="date"
-                          name="dateOfBirth"
-                          value={p.dateOfBirth}
+                          name="passportExpiryDate"
+                          value={p.passportExpiryDate}
                           onChange={(e) => {
                             const updatedPassengers = [...passengerDetails];
                             updatedPassengers[idx] = {
                               ...updatedPassengers[idx],
-                              dateOfBirth: e.target.value,
+                              passportExpiryDate: e.target.value,
                             };
                             setPassengerDetails(updatedPassengers);
                           }}
-                          className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          className={`form-control py-2 ${
+                            error[idx]?.passportExpiryDate ? "is-invalid" : ""
+                          }`}
                         />
-                        {error[idx]?.dateOfBirth && (
-                          <p className="text-red-500 text-sm">
-                            {error[idx].dateOfBirth}
-                          </p>
+                        {error[idx]?.passportExpiryDate && (
+                          <div className="invalid-feedback d-block">
+                            {error[idx].passportExpiryDate}
+                          </div>
                         )}
                       </div>
 
-                      <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">
-                          Gender
+                      <div className="col-12">
+                        <label className="form-label small fw-medium text-body">
+                          Nationality
                         </label>
-                        <select
-                          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          value={p.gender}
+                        <input
+                          type="text"
+                          name="nationality"
+                          value={p.nationality}
                           onChange={(e) => {
                             const updatedPassengers = [...passengerDetails];
                             updatedPassengers[idx] = {
                               ...updatedPassengers[idx],
-                              gender: e.target.value,
+                              nationality: e.target.value,
                             };
                             setPassengerDetails(updatedPassengers);
                           }}
-                        >
-                          <option value="">Select Gender</option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="other">Other</option>
-                        </select>
-                        {error[idx]?.gender && (
-                          <p className="text-red-500 text-sm">
-                            {error[idx].gender}
-                          </p>
+                          placeholder="Enter nationality"
+                          className={`form-control py-2 ${
+                            error[idx]?.nationality ? "is-invalid" : ""
+                          }`}
+                        />
+                        {error[idx]?.nationality && (
+                          <div className="invalid-feedback d-block">
+                            {error[idx].nationality}
+                          </div>
                         )}
-                      </div>
-                    </div>
-
-                    {/* Passport Details */}
-                    <div className="mt-7 border-t border-slate-100 pt-6">
-                      <h3 className="mb-5 font-semibold text-slate-800">
-                        Travel Document Details
-                      </h3>
-
-                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        <div>
-                          <label className="mb-2 block text-sm font-medium text-slate-700">
-                            Passport Number
-                          </label>
-                          <input
-                            type="text"
-                            name="passportNumber"
-                            value={p.passportNumber}
-                            onChange={(e) => {
-                              const updatedPassengers = [...passengerDetails];
-                              updatedPassengers[idx] = {
-                                ...updatedPassengers[idx],
-                                passportNumber: e.target.value,
-                              };
-                              setPassengerDetails(updatedPassengers);
-                            }}
-                            placeholder="Enter passport number"
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          />
-                          {error[idx]?.passportNumber && (
-                            <p className="text-red-500 text-sm">
-                              {error[idx].passportNumber}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="mb-2 block text-sm font-medium text-slate-700">
-                            Passport Expiry Date
-                          </label>
-                          <input
-                            type="date"
-                            name="passportExpiryDate"
-                            value={p.passportExpiryDate}
-                            onChange={(e) => {
-                              const updatedPassengers = [...passengerDetails];
-                              updatedPassengers[idx] = {
-                                ...updatedPassengers[idx],
-                                passportExpiryDate: e.target.value,
-                              };
-                              setPassengerDetails(updatedPassengers);
-                            }}
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          />
-                          {error[idx]?.passportExpiryDate && (
-                            <p className="text-red-500 text-sm">
-                              {error[idx].passportExpiryDate}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="sm:col-span-2">
-                          <label className="mb-2 block text-sm font-medium text-slate-700">
-                            Nationality
-                          </label>
-                          <input
-                            type="text"
-                            name="nationality"
-                            value={p.nationality}
-                            onChange={(e) => {
-                              const updatedPassengers = [...passengerDetails];
-                              updatedPassengers[idx] = {
-                                ...updatedPassengers[idx],
-                                nationality: e.target.value,
-                              };
-                              setPassengerDetails(updatedPassengers);
-                            }}
-                            placeholder="Enter nationality"
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          />
-                          {error[idx]?.nationality && (
-                            <p className="text-red-500 text-sm">
-                              {error[idx].nationality}
-                            </p>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              </div>
+            ))}
 
-              {/* Add Passenger Button */}
-              {passengerDetails.length < adults ? (
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50/50 px-5 py-4 font-semibold text-blue-600 transition hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
-                  onClick={() => {
-                    setPassengerDetails([
-                      ...passengerDetails,
-                      {
-                        firstName: "",
-                        lastName: "",
-                        dateOfBirth: "",
-                        gender: "",
-                        passportNumber: "",
-                        passportExpiryDate: "",
-                        nationality: "",
-                      },
-                    ]);
-                  }}
-                >
-                  <span className="text-xl">+</span>
-                  Add Passenger
-                </button>
-              ) : (
-                <button
-                  disabled={true}
-                  type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50/50 px-5 py-4 font-semibold text-blue-600 transition hover:border-blue-500 hover:bg-blue-50 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  onClick={() => {
-                    setPassengerDetails([
-                      ...passengerDetails,
-                      {
-                        firstName: "",
-                        lastName: "",
-                        dateOfBirth: "",
-                        gender: "",
-                        passportNumber: "",
-                        passportExpiryDate: "",
-                        nationality: "",
-                      },
-                    ]);
-                  }}
-                >
-                  <span className="text-xl">+</span>
-                  Add Passenger
-                </button>
-              )}
+            {/* Add Passenger Button */}
+            <button
+              type="button"
+              disabled={passengerDetails.length >= adults}
+              className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold"
+              onClick={() => {
+                setPassengerDetails([
+                  ...passengerDetails,
+                  {
+                    firstName: "",
+                    lastName: "",
+                    dateOfBirth: "",
+                    gender: "",
+                    passportNumber: "",
+                    passportExpiryDate: "",
+                    nationality: "",
+                  },
+                ]);
+              }}
+            >
+              <span className="fs-5">+</span>
+              <span>Add Passenger</span>
+            </button>
 
-              {/* Contact Information */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-2 text-lg font-bold text-slate-800">
+            {/* Contact Information */}
+            <div className="card border-0 rounded-4 shadow-sm">
+              <div className="card-body p-3 p-sm-4">
+                <h2 className="h5 fw-bold text-body mb-1">
                   Contact Information
                 </h2>
 
-                <p className="mb-6 text-sm text-slate-500">
+                <p className="mb-4 small text-body-secondary">
                   Booking confirmation and flight updates will be sent here.
                 </p>
 
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                <div className="row g-3">
+                  <div className="col-12 col-sm-6">
+                    <label className="form-label small fw-medium text-body">
                       Email Address
                     </label>
                     <input
@@ -450,15 +430,19 @@ const PassengerDetails = () => {
                         });
                       }}
                       placeholder="example@gmail.com"
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className={`form-control py-2 ${
+                        error?.email ? "is-invalid" : ""
+                      }`}
                     />
                     {error?.email && (
-                      <p className="text-red-500 text-sm">{error.email}</p>
+                      <div className="invalid-feedback d-block">
+                        {error.email}
+                      </div>
                     )}
                   </div>
 
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                  <div className="col-12 col-sm-6">
+                    <label className="form-label small fw-medium text-body">
                       Mobile Number
                     </label>
                     <input
@@ -472,116 +456,101 @@ const PassengerDetails = () => {
                         });
                       }}
                       placeholder="+91 00000 00000"
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className={`form-control py-2 ${
+                        error?.phoneNumber ? "is-invalid" : ""
+                      }`}
                     />
                     {error?.phoneNumber && (
-                      <p className="text-red-500 text-sm">
+                      <div className="invalid-feedback d-block">
                         {error.phoneNumber}
-                      </p>
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Booking Summary */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-5 text-lg font-bold text-slate-800">
-                  Booking Summary
-                </h2>
+          {/* Booking Summary */}
+          <div className="col-12 col-lg-4">
+            <div
+              className="card border-0 rounded-4 shadow-sm sticky-top"
+              style={{ top: "1.5rem" }}
+            >
+              <div className="card-body p-3 p-sm-4">
+                <h2 className="h5 fw-bold text-body mb-3">Booking Summary</h2>
 
-                <div className="mb-5 rounded-xl bg-slate-50 p-4">
-                  <div className="flex items-center justify-between">
+                <div className="mb-4 rounded-3 bg-body-tertiary p-3">
+                  <div className="d-flex align-items-center justify-content-between gap-2">
                     <div>
-                      <p className="text-xl font-bold text-slate-900">
-                        {" "}
-                        {
-                          flightData?.slices?.[0]?.segments?.[0]?.origin
-                            ?.iata_city_code
-                        }
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {" "}
-                        {
-                          flightData?.slices?.[0]?.segments?.[0]?.origin
-                            ?.city_name
-                        }
-                      </p>
+                      <div className="fs-4 fw-bold text-body">
+                        {segment?.origin?.iata_city_code}
+                      </div>
+                      <div className="small text-body-secondary">
+                        {segment?.origin?.city_name}
+                      </div>
                     </div>
 
-                    <div className="flex flex-1 flex-col items-center px-3">
-                      <span className="text-xs text-slate-400">3h 9m</span>
-                      <div className="relative my-2 h-px w-full bg-slate-300">
-                        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-50 px-2 text-blue-600">
-                          ✈
-                        </span>
+                    <div className="d-flex flex-column align-items-center flex-grow-1 px-2">
+                      <span className="small text-secondary mb-1">3h 9m</span>
+                      <div className="d-flex align-items-center w-100">
+                        <div className="border-top flex-grow-1" />
+                        <span className="px-2 text-primary">✈</span>
+                        <div className="border-top flex-grow-1" />
                       </div>
-                      <span className="text-xs text-green-600">
-                        {flightData?.slices?.[0]?.segments?.[0]?.stops
-                          .length === 0
-                          ? "Non-Stop"
-                          : "Via"}
+                      <span className="small text-success mt-1">
+                        {segment?.stops?.length === 0 ? "Non-Stop" : "Via"}
                       </span>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-slate-900">
-                        {" "}
-                        {
-                          flightData?.slices?.[0]?.segments?.[0]?.destination
-                            ?.iata_city_code
-                        }
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {" "}
-                        {
-                          flightData?.slices?.[0]?.segments?.[0]?.destination
-                            ?.city_name
-                        }
-                      </p>
+                    <div className="text-end">
+                      <div className="fs-4 fw-bold text-body">
+                        {segment?.destination?.iata_city_code}
+                      </div>
+                      <div className="small text-body-secondary">
+                        {segment?.destination?.city_name}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Passengers</span>
-                    <span className="font-semibold text-slate-800">
+                <div className="small d-flex flex-column gap-2">
+                  <div className="d-flex justify-content-between">
+                    <span className="text-body-secondary">Passengers</span>
+                    <span className="fw-semibold text-body">
                       {adults} Adults
                     </span>
                   </div>
 
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Base Fare</span>
-
-                    <span className="font-semibold text-slate-800">
+                  <div className="d-flex justify-content-between">
+                    <span className="text-body-secondary">Base Fare</span>
+                    <span className="fw-semibold text-body">
                       ₹ {rate?.baseAmount}
                     </span>
                   </div>
 
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Taxes & Fees</span>
-
-                    <span className="font-semibold text-slate-800">
+                  <div className="d-flex justify-content-between">
+                    <span className="text-body-secondary">
+                      Taxes &amp; Fees
+                    </span>
+                    <span className="fw-semibold text-body">
                       ₹ {rate?.taxAmount}
                     </span>
                   </div>
                 </div>
 
-                <div className="my-5 border-t border-dashed border-slate-300"></div>
+                <hr className="my-3" />
 
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800">Total Fare</span>
-
-                  <span className="font-semibold text-slate-800">
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="fw-bold text-body">Total Fare</span>
+                  <span className="fs-5 fw-bold text-primary">
                     ₹ {rate?.totalAmount}
                   </span>
                 </div>
 
                 <button
                   type="button"
-                  className="mt-7 w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.98]"
+                  className="btn btn-primary btn-lg mt-4 w-100 py-2 fw-semibold shadow-sm"
                   onClick={() => {
                     createBooking({
                       flightId: flightData?.id,
@@ -594,7 +563,7 @@ const PassengerDetails = () => {
                   Continue to Review →
                 </button>
 
-                <p className="mt-4 text-center text-xs text-slate-400">
+                <p className="mt-3 mb-0 text-center small text-secondary">
                   Your information is kept secure.
                 </p>
               </div>
@@ -602,7 +571,7 @@ const PassengerDetails = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
