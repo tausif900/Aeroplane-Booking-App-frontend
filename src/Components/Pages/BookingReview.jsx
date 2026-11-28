@@ -171,15 +171,28 @@ const BookingReview = () => {
                 <div className="row g-3">
                   <div className="col-6 col-md-4">
                     <div className="text-body-secondary small">Airline</div>
-                    <div className="fw-semibold mt-1">Airline Name</div>
+                    <div className="fw-semibold mt-1">
+                      {flightData?.owner?.name}
+                    </div>
                   </div>
                   <div className="col-6 col-md-4">
                     <div className="text-body-secondary small">Flight type</div>
-                    <div className="fw-semibold mt-1">International</div>
+                    <div className="fw-semibold mt-1">
+                      {flightData?.slices?.[0]?.origin?.iata_country_code !==
+                      flightData?.slices?.[0]?.destination?.iata_country_code
+                        ? "International"
+                        : "Domestic"}
+                    </div>
                   </div>
                   <div className="col-12 col-md-4">
                     <div className="text-body-secondary small">Cabin class</div>
-                    <div className="fw-semibold mt-1">Economy</div>
+                    <div className="fw-semibold mt-1">
+                      {" "}
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.passengers?.[0]
+                          ?.cabin_class_marketing_name
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
@@ -203,105 +216,65 @@ const BookingReview = () => {
                     <h2 className="h5 fw-bold mb-0">Passenger information</h2>
                   </div>
                   <span className="badge bg-body-tertiary text-body rounded-pill px-3 py-2">
-                    2 Adults
+                    {passengerDetails.length} Adults
                   </span>
                 </div>
 
                 {/* Passenger 1 */}
-                <div className="border rounded-4 p-3 mb-3">
-                  <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
-                    <div
-                      className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
-                      style={{ width: "42px", height: "42px" }}
-                    >
-                      01
-                    </div>
-                    <div>
-                      <h3 className="h6 fw-bold mb-0">John Doe</h3>
-                      <small className="text-body-secondary">
-                        Adult passenger
-                      </small>
-                    </div>
-                    <span className="badge bg-success-subtle text-success ms-auto">
-                      ✓ Details added
-                    </span>
-                  </div>
+                {passengerDetails.map((p, idx) => {
+                  return (
+                    <div className="border rounded-4 p-3 mb-3" key={p.idx}>
+                      <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                        <div
+                          className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                          style={{ width: "42px", height: "42px" }}
+                        >
+                          {idx + 1}
+                        </div>
+                        <div>
+                          <h3 className="h6 fw-bold mb-0">
+                            {p.firstName + " " + p.lastName}
+                          </h3>
+                        </div>
+                        <span className="badge bg-success-subtle text-success ms-auto">
+                          ✓ Details added
+                        </span>
+                      </div>
 
-                  <div className="row g-3">
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Gender
-                      </small>
-                      <span className="fw-semibold">Male</span>
+                      <div className="row g-3">
+                        <div className="col-6 col-md-3">
+                          <small className="text-body-secondary d-block">
+                            Gender
+                          </small>
+                          <span className="fw-semibold">
+                            {p.gender.charAt(0).toUpperCase() +
+                              p.gender.slice(1)}
+                          </span>
+                        </div>
+                        <div className="col-6 col-md-3">
+                          <small className="text-body-secondary d-block">
+                            Date of birth
+                          </small>
+                          <span className="fw-semibold">{p.dateOfBirth}</span>
+                        </div>
+                        <div className="col-6 col-md-3">
+                          <small className="text-body-secondary d-block">
+                            Nationality
+                          </small>
+                          <span className="fw-semibold">{p.nationality}</span>
+                        </div>
+                        <div className="col-6 col-md-3">
+                          <small className="text-body-secondary d-block">
+                            Passport
+                          </small>
+                          <span className="fw-semibold">
+                            {p.passportNumber}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Date of birth
-                      </small>
-                      <span className="fw-semibold">15 Jan 1998</span>
-                    </div>
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Nationality
-                      </small>
-                      <span className="fw-semibold">Indian</span>
-                    </div>
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Passport
-                      </small>
-                      <span className="fw-semibold">XXXXXXXX</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Passenger 2 */}
-                <div className="border rounded-4 p-3">
-                  <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
-                    <div
-                      className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
-                      style={{ width: "42px", height: "42px" }}
-                    >
-                      02
-                    </div>
-                    <div>
-                      <h3 className="h6 fw-bold mb-0">Jane Doe</h3>
-                      <small className="text-body-secondary">
-                        Adult passenger
-                      </small>
-                    </div>
-                    <span className="badge bg-success-subtle text-success ms-auto">
-                      ✓ Details added
-                    </span>
-                  </div>
-
-                  <div className="row g-3">
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Gender
-                      </small>
-                      <span className="fw-semibold">Female</span>
-                    </div>
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Date of birth
-                      </small>
-                      <span className="fw-semibold">20 Mar 1997</span>
-                    </div>
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Nationality
-                      </small>
-                      <span className="fw-semibold">Indian</span>
-                    </div>
-                    <div className="col-6 col-md-3">
-                      <small className="text-body-secondary d-block">
-                        Passport
-                      </small>
-                      <span className="fw-semibold">XXXXXXXX</span>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </section>
 
@@ -319,7 +292,9 @@ const BookingReview = () => {
                       <small className="text-body-secondary d-block">
                         Email address
                       </small>
-                      <span className="fw-semibold">johndoe@gmail.com</span>
+                      <span className="fw-semibold">
+                        {contactDetails?.email}
+                      </span>
                     </div>
                   </div>
                   <div className="col-12 col-md-6">
@@ -327,7 +302,9 @@ const BookingReview = () => {
                       <small className="text-body-secondary d-block">
                         Phone number
                       </small>
-                      <span className="fw-semibold">+91 9876543210</span>
+                      <span className="fw-semibold">
+                        {contactDetails?.phoneNumber}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -361,29 +338,28 @@ const BookingReview = () => {
 
                 <div className="d-flex justify-content-between mb-2">
                   <span className="text-body-secondary">Passengers</span>
-                  <span className="fw-semibold">2 Adults</span>
+                  <span className="fw-semibold">
+                    {passengerDetails.length} Adults
+                  </span>
                 </div>
 
                 <div className="d-flex justify-content-between mb-2">
                   <span className="text-body-secondary">Base fare</span>
-                  <span className="fw-semibold">₹25,000</span>
+                  <span className="fw-semibold">₹{rate?.baseAmount}</span>
                 </div>
 
                 <div className="d-flex justify-content-between mb-2">
                   <span className="text-body-secondary">Taxes &amp; fees</span>
-                  <span className="fw-semibold">₹5,000</span>
-                </div>
-
-                <div className="d-flex justify-content-between mb-3">
-                  <span className="text-body-secondary">Convenience fee</span>
-                  <span className="fw-semibold">Included</span>
+                  <span className="fw-semibold">₹{rate?.taxAmount}</span>
                 </div>
 
                 <hr className="my-3" />
 
                 <div className="d-flex justify-content-between align-items-center mb-1">
                   <span className="fw-bold">Total amount</span>
-                  <span className="text-primary fw-bold fs-3">₹30,000</span>
+                  <span className="text-primary fw-bold fs-3">
+                    ₹{rate?.totalAmount}
+                  </span>
                 </div>
 
                 <div className="text-body-secondary small mb-3">
