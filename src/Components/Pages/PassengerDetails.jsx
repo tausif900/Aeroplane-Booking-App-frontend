@@ -129,7 +129,14 @@ const PassengerDetails = () => {
         },
       );
       console.log(response.data);
-      navigate(`/booking-review/${response.data.bookingId}`);
+      navigate(`/booking-review/${response.data.bookingId}`, {
+        state: {
+          flightData,
+          contactDetails,
+          passengerDetails,
+          rate
+        },
+      });
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong");

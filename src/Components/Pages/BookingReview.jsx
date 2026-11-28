@@ -1,9 +1,16 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const BookingReview = () => {
   const { bookingId } = useParams();
   console.log(bookingId);
+
+  const location = useLocation();
+  console.log(location?.state);
+  const flightData = location?.state?.flightData;
+  const passengerDetails = location?.state?.passengerDetails;
+  const contactDetails = location?.state?.contactDetails;
+  const rate = location?.state?.rate;
 
   return (
     <div className="min-vh-100 d-flex flex-column bg-body-tertiary text-body">
@@ -27,7 +34,7 @@ const BookingReview = () => {
         <div className="row align-items-center gy-3 mb-4">
           <div className="col-12 col-md">
             <div className="text-primary fw-semibold small mb-1">
-              YOUR JOURNEY · STEP 03 OF 04
+              YOUR JOURNEY
             </div>
             <h1 className="fw-bold display-6 mb-1">Review your trip</h1>
             <p className="text-body-secondary mb-0">
@@ -67,14 +74,36 @@ const BookingReview = () => {
                     <div className="text-body-secondary small mb-1">
                       DEPARTURE
                     </div>
-                    <div className="display-6 fw-bold mb-0">BOM</div>
-                    <div className="fw-semibold">Mumbai</div>
-                    <div className="text-body-secondary small mt-2">
-                      15 Nov 2026
+                    <div className="display-6 fw-bold mb-0">
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.origin
+                          ?.iata_city_code
+                      }
                     </div>
-                    <div className="h5 fw-bold mt-1 mb-0">10:50 AM</div>
+                    <div className="fw-semibold">
+                      {" "}
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.origin
+                          ?.city_name
+                      }
+                    </div>
+                    <div className="text-body-secondary small mt-2">
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.departing_at.split(
+                          "T",
+                        )[0]
+                      }
+                    </div>
+                    <div className="h5 fw-bold mt-1 mb-0">
+                      {" "}
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.departing_at.split(
+                          "T",
+                        )[1]
+                      }
+                    </div>
                     <div className="small text-body-secondary">
-                      Chhatrapati Shivaji Airport
+                      {flightData?.slices?.[0]?.segments?.[0]?.origin?.name}
                     </div>
                   </div>
 
@@ -87,7 +116,10 @@ const BookingReview = () => {
                       <div className="border-top flex-grow-1" />
                     </div>
                     <div className="small text-success fw-semibold mt-1">
-                      Non-stop
+                      {flightData?.slices?.[0]?.segments?.[0]?.stops.length ===
+                      0
+                        ? "Non-Stop"
+                        : "Via"}
                     </div>
                   </div>
 
@@ -96,14 +128,40 @@ const BookingReview = () => {
                     <div className="text-body-secondary small mb-1">
                       ARRIVAL
                     </div>
-                    <div className="display-6 fw-bold mb-0">DXB</div>
-                    <div className="fw-semibold">Dubai</div>
-                    <div className="text-body-secondary small mt-2">
-                      15 Nov 2026
+                    <div className="display-6 fw-bold mb-0">
+                      {" "}
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.destination
+                          ?.iata_city_code
+                      }
                     </div>
-                    <div className="h5 fw-bold mt-1 mb-0">12:29 PM</div>
+                    <div className="fw-semibold">
+                      {" "}
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.destination
+                          ?.city_name
+                      }
+                    </div>
+                    <div className="text-body-secondary small mt-2">
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.arriving_at.split(
+                          "T",
+                        )[0]
+                      }
+                    </div>
+                    <div className="h5 fw-bold mt-1 mb-0">
+                      {" "}
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.arriving_at.split(
+                          "T",
+                        )[1]
+                      }
+                    </div>
                     <div className="small text-body-secondary">
-                      Dubai International Airport
+                      {
+                        flightData?.slices?.[0]?.segments?.[0]?.destination
+                          ?.name
+                      }
                     </div>
                   </div>
                 </div>
